@@ -1,0 +1,33 @@
+matrixprofile
+plotly
+saxpy
+oct2py 
+keras==2.3.1
+tensorflow==2.2 
+tensorflow-gpu==2.2
+scipy
+openpyxl
+xlrd
+pandas
+scikit-learn>=0.23.2
+
+
+
+river
+altair 
+vega_datasets
+#! pip install git+https://github.com/online-ml/river --upgrade
+numpy
+colorama
+pysad
+pyod
+combo>=0.0.8 
+joblib 
+numpy>=1.18.5 
+numba>=0.35 
+pandas>=0.25 
+scipy>=0.19.1  
+delayed 
+statsmodels
+#!pip install --upgrade pyod  # or update if needed
+#!pip install --pre pyod  
