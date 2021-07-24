@@ -92,6 +92,8 @@ from test_hs_tree import class_hstree
 from test_iforestASD import class_iforestASD
 from score_nab import evaluating_change_point
 from test_ARIMAFD import class_ARIMAFD
+from test_KitNet import class_KitNet
+
 class class_MILOF:
     def __init__(self):
         #self.nbr_anomalies= nbr_anomalies
@@ -260,7 +262,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     if scoring_metric=="merlin":
         gap =int(int(base["Dataset length"][idx])/100)
     if scoring_metric=="nab":
-        gap = int(len(X)/(100*nbr_anomalies))
+        gap = int(len(X)/(20*nbr_anomalies))
     
     if key =="HS-tree":
         real_scores, scores_label, identified,score,best_param, time_taken_1= class_hstree.test(dataset,X,right,nbr_anomalies,gap,scoring_metric=scoring_metric)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
@@ -271,6 +273,8 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         real_scores, scores_label, identified,score,best_param, time_taken_1= class_iforestASD.test(X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
     if key=="ARIMAFD":
         real_scores, scores_label, identified,score,best_param, time_taken_1= class_ARIMAFD.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+    if key=="KitNet":
+        real_scores, scores_label, identified,score,best_param, time_taken_1= class_KitNet.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
     if key=="LAMP":
         base2 = pd.read_excel("point_methods_result_milof.xlsx")
@@ -297,31 +301,31 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     #thresholds.append(threshold)
     print("terminé")
     def insertion(file):
+        best_params[idx]=best_param
+        time_taken[idx]=time_taken_1
+        merlin_score[idx] = score
+        all_identified[idx] =identified
         try:
             if key in file: 
                 base2 = pd.read_excel("streaming_results/"+file)
             else:
                 base2 = pd.read_excel(file) 
-            best_params[idx]=best_param
-            time_taken[idx]=time_taken_1
-            merlin_score[idx] = score
-            all_identified[idx] =identified
+            
             base2[key+"_identified"] [idx]= all_identified[idx]
             base2[key+"_Overlap_merlin"] [idx]= merlin_score[idx]
             base2[key+"best_param"] [idx]=str(best_params [idx])
             base2[key+"time_taken"] [idx]= time_taken[idx]
-            print(" erreur)***************************************************************************************")
         except :
             base2 = pd.read_excel("abnormal_point_datasets.xlsx")
             base2[key+"_identified"] = all_identified
             base2[key+"_Overlap_merlin"] = merlin_score
             base2[key+"best_param"] =best_params 
             base2[key+"time_taken"]= time_taken
-            #base[key+"_threshold"]=thresholds"""""
+            
             if key in file:
-                print(best_params[idx])
+                print(best_params[idx], best_param)
                 for key2,value in best_params[idx].items():
-                    base2["best_param"+key2] ="RAS"#best_params[key2]
+                    base2["best_param"+key2] ="RAS""""#best_params[key2]"""
 
         if key in file:
             for key2,value in best_params[idx].items():
@@ -347,8 +351,8 @@ pool =mp.Pool(mp.cpu_count())
 
 def test () :                                                         
     
-    methods= {"HS-tree":0,"MILOF":0,"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
-    scoring_metric=["nab"] # ,"merlin"
+    methods= {"ARIMAFD":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
         thresholds=[]
         merlin_score=np.zeros(len(base))
@@ -356,15 +360,15 @@ def test () :
         best_params= ["params" for i in time_taken]
         all_identified= ["no" for i in time_taken]
         for scoring  in scoring_metric:
-            #for i, d in enumerate(base["Dataset"]):
-            #    dataset_test(merlin_score,best_params,time_taken,all_identified,key,0,base["Dataset"][i],scoring_metric=scoring)
-            with Manager() as mgr:
+            for i, d in enumerate(base["Dataset"]):
+                dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
+            """with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
-            
+            """
         """print(len(output))
         print(output[0])
         base[key+"_identified"] = all_identified

@@ -85,11 +85,11 @@ class class_ARIMAFD:
             
             """
             a =anomaly_detection(X)
-            #a.tensor =a.generate_tensor(ar_order=window_size)
-            #a.proc_tensor(No_metric=1)
+            a.tensor =a.generate_tensor(ar_order=window_size)
+            a.proc_tensor(No_metric=1)
             #print(a.evaluate_nab([[0.1,1]]))
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
-            scores=np.concatenate([np.zeros(100),a.generate_tensor(ar_order=window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
+            scores=np.concatenate([np.zeros(window_size),a.generate_tensor(ar_order=window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
             print(len(X),"****",len(scores))
             return scores
 
@@ -128,10 +128,10 @@ class class_ARIMAFD:
 
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_window_size =np.arange(100,1000) #[*range(200,1000)]
+        possible_window_size =np.arange(20, 200) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= ARIMAFD(X,window_size=possible_window_size[best["window_size_index"]])
@@ -213,5 +213,5 @@ def test () :
             
 
 
-test()
+#test()
 
