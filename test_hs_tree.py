@@ -40,7 +40,6 @@ from numba.core.errors import TypingError
 actual_dataset=[0]
 
 
-from test_1 import class_iforestASD
 # methode avec matrix profile
 def plot_time_series(df, title=None, ano=None, ano_name='None'):
 	fig = go.Figure()
@@ -61,10 +60,14 @@ def plot_fig (df, title, ):
 #@jit(nopython=True)
 
 def check (indice, real_indices,gap):
+    """
+    The idea of this check is to insure two neighbours anomalies are not throw since we are using the merlin score and the nab one. Let a method
+    give all its anomalies in the same window is not realy fair. 
+    """
     Flag=True
     for real_indice in real_indices:
         #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(real_indice,real_indice+gap) # " il y'avait -gap
+        search = np.arange(real_indice-gap,real_indice+gap) # " il y'avait -gap
         if indice in search:
             Flag=False
     return Flag
@@ -90,7 +93,7 @@ def score_to_label(nbr_anomalies,scores,gap):
         if check(indice,real_indices,gap):
             real_indices = np.append(real_indices,indice)
         #print("**",threshold,(real_indices))
-  return np.where(scores<threshold,0,1)# [0 if i<threshold else 1 for i in scores ]
+  return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
 
 
 #ok
@@ -100,13 +103,13 @@ def score_to_label(nbr_anomalies,scores,gap):
 import math
 import sys
 from datetime import datetime
-
+from score_nab import evaluating_change_point
 class class_hstree:
     def __init__(self):
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
     
-    def test(dataset,X,right,nbr_anomalies,gap):
+    def test(dataset,X,right,nbr_anomalies,gap, scoring_metric="merlin"):
 
         #@jit
         def HStree(X, initial_window=500, window_size=500, num_trees=25, max_depth=15):
@@ -138,6 +141,19 @@ class class_hstree:
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
             score=score/nbr_anomalies
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                score=nab_score       
             return score
         
         def objective(args):
@@ -145,7 +161,9 @@ class class_hstree:
             
             #try:
             scores= HStree(X,initial_window=args["initial_window"],window_size=args["window_size"] )
-            scores =score_to_label(nbr_anomalies,scores,gap)            
+            scores= score_to_label(nbr_anomalies,scores,gap) 
+            
+            
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
@@ -156,7 +174,7 @@ class class_hstree:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]] )
@@ -173,7 +191,21 @@ class class_hstree:
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         #print("the final score is", scoring(scores_label),identified)
-        return real_scores, scores_label, identified,scoring(scores_label), str(best_param), end-start
+        """if scoring_metric=="nab":
+            real_label = np.zeros(len(X))
+            for element in right:
+                real_label[int(element)]=1
+            real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+            scores_frame=pd.DataFrame(scores_label, columns=['changepoint']) 
+            real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+            scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+            real_label_frame =real_label_frame.set_index('datetime')
+            scores_frame =scores_frame.set_index('datetime')
+        
+            nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+            nab_score=nab_score["Standart"]  
+            return real_scores, scores_label, identified,nab_score, best_param, end-start"""    
+        return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
         
@@ -185,6 +217,7 @@ class class_hstree:
 
 #@jit    
 #$
+"""
 import multiprocessing
 mutex =multiprocessing.Lock()
 import openpyxl
@@ -238,18 +271,11 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         base2[key+"_Overlap_merlin"] = merlin_score
         base2[key+"best_param"] =best_params 
         base2[key+"time_taken"]= time_taken
-        #base[key+"_threshold"]=thresholds"""""
-    base2.to_excel("point_methods_result_hstree.xlsx")
-
-        
-    #insertion()
-    """filename = 'point_methods_result_hstree.xlsx'
-    wb = openpyxl.load_workbook(filename)
-    wb.cell(row=idx, value=base.iloc[idx])
-    wb.save(filename)"""
+        #base[key+"_threshold"]=thresholds
+    base2.to_excel("point_methods_result_hstree.xlsx")    
     return idx, best_param,time_taken_1, score, identified
     
-
+"""
 import multiprocessing as mp
 from multiprocessing import Manager
 pool =mp.Pool(mp.cpu_count())
@@ -352,7 +378,7 @@ def test () :
             
 
 
-test()
+#test()
 
 
 def overlapping_merlin(identified, expected,gap):

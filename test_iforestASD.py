@@ -37,7 +37,7 @@ import numba  # We added these two lines for a 500x speedup
 from numba import njit, types
 from numba.extending import overload, register_jitable
 from numba.core.errors import TypingError
-
+from score_nab import evaluating_change_point
 # methode avec matrix profile
 def plot_time_series(df, title=None, ano=None, ano_name='None'):
 	fig = go.Figure()
@@ -99,7 +99,7 @@ class class_iforestASD:
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
             
-    def test(X,right,nbr_anomalies,gap):
+    def test(X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
         #@jit
         def iforestASD(X,window_size,n_estimators=100):
@@ -154,6 +154,19 @@ class class_iforestASD:
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
             score=score/nbr_anomalies
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                return nab_score
             return score
         
         def objective(args):
@@ -170,7 +183,7 @@ class class_iforestASD:
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
@@ -179,7 +192,7 @@ class class_iforestASD:
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         best_param={"window_size":possible_window_size[best["window_size_index"]],"n_estimator": possible_nbr_tree[best["n_estimators_index"]]}
         #print("the final score is", scoring(scores_label),identified)
-        return real_scores, scores_label, identified,scoring(scores_label), str(best_param), end-start
+        return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
 
@@ -236,7 +249,7 @@ class class_our_stream:
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
     
-    def test(X,right,nbr_anomalies,gap):
+    def test(X,right,nbr_anomalies,gap,scoring_metric="merlini"):
         
 
         def distance(a,b):
@@ -301,6 +314,22 @@ class class_our_stream:
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
             score=score/nbr_anomalies
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')
+                print(scores_frame, real_label_frame)
+                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                print(nab_score)
+                return 1/(1+nab_score) 
             return score
         
         def objective(args):
@@ -317,7 +346,7 @@ class class_our_stream:
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
@@ -326,7 +355,7 @@ class class_our_stream:
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         best_param={"window_size":possible_window_size[best["window_size_index"]],"n_estimator": possible_nbr_tree[best["n_estimators_index"]]}
         #print("the final score is", scoring(scores_label),identified)
-        return real_scores, scores_label, identified,scoring(scores_label), str(best_param), end-start
+        return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
 

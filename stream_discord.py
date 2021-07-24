@@ -139,7 +139,7 @@ from hyperopt import fmin, tpe,hp, STATUS_OK, Trials
 import numpy as np
 import matrixprofile as mp
 import time
-
+from score_nab import evaluating_change_point
 # methode avec matrix profile
 def plot_time_series(df, title=None, ano=None, ano_name='None'):
 	fig = go.Figure()
@@ -199,7 +199,7 @@ class class_our:
         print("ok")
    
     
-    def test(dataset,X,right,nbr_anomalies,gap):
+    def test(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
         #@jit
         
@@ -219,6 +219,19 @@ class class_our:
               if 1 in scores[real-gap:real+gap]:
                   score+=1
           score=score/nbr_anomalies
+          if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                score=nab_score  
           return score
     
       def objective(args):
@@ -258,31 +271,7 @@ class class_our:
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
       #print("the final score is", scoring(scores_label),identified)
-      return real_scores, scores_label, identified,scoring(scores_label), str(best_param), end-start
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
         
-
-
-
-    
-base_file ='Pattern_lengths_and_Number_of_discords2.xlsx'
-base = pd.read_excel(base_file)
-merlin_score=np.zeros(len(base))
-best_params = np.zeros(len(base))
-time_taken = np.zeros(len(base))
-best_params= ["params" for i in time_taken]
-"""for idx, dataset in enumerate(base["Dataset"]):
-    df = pd.read_csv("dataset/"+dataset, names=["value"])
-    if os.path.exists("real_nab_data/"+dataset) :
-        df = pd.read_csv("real_nab_data/"+dataset)
-    print(dataset)
-    #if dataset=="nab-data/artificialWithAnomaly/art_daily_flatmiddle.csv":
-    column="value"
-    X =[[i] for i in df[column].values]
-    column="value"
-    #print(df[column].values) X,right,nbr_anomalies,gap
-    scores = class_LAMP.test(dataset,df[column].values,[2000],1,200)
-    print("****",len(scores), len(X))
-#break    # reading the dataset
-"""
