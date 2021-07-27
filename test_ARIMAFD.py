@@ -74,13 +74,13 @@ class class_ARIMAFD:
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
             
-    def test(X,right,nbr_anomalies,gap,scoring_metric="merlin"):
+    def test(df,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
         #@jit
         def ARIMAFD(X,window_size):
             X =np.array(X)
-            X=X.reshape(-1,1)
-            X=pd.DataFrame(X,columns=["value"])
+            X=X#.reshape(-1,1)
+            X=pd.DataFrame(X,columns=df.columns)
             """
             
             """
@@ -90,7 +90,7 @@ class class_ARIMAFD:
             #print(a.evaluate_nab([[0.1,1]]))
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
             scores=np.concatenate([np.zeros(window_size),a.generate_tensor(ar_order=window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
-            print(len(X),"****",len(scores))
+            print(len(X),"****",len(scores), "***", scores)
             return scores
 
                 

@@ -116,20 +116,21 @@ class class_KitNet:
             np.random.seed(61)  # Fix random seed.
             X_all =np.array(X)
             iterator = ArrayStreamer(shuffle=False)
-            #X=X_all.reshape(-1,4)
-            X_all=X_all.reshape(1,-1)[0]
+            print(X_all.shape)
+            X_all=X_all#.reshape(1,-1)[0:2]
             # Fit reference window integration to first 100 instances initially.
-            model=models.KitNet(1,grace_anomaly_detector=window_size, grace_feature_mapping =window_size)#, grace_feature_mapping=window_size,grace_anomaly_detector =window_size)
+            model=models.KitNet( grace_anomaly_detector =window_size)#, )grace_feature_mapping=window_size,
             scores=[]
             #scores= scores+ np.zeros(len(X_all[:initial_window])).tolist()
             end=0
             for idx, x in enumerate(X_all):
-                x=X_all[idx:idx+window_size]
-                if len(x)<window_size:
+                #x=X_all[idx:idx+window_size]
+                """if len(x)<window_size:
                     end=len(X_all)-idx
-                    break
+                    break"""
                 model.fit_partial(x)  # Fit to the instance.
                 score = model.score_partial(x)  # Score the instance.
+                print(score)
                 scores.append(score)
             
             scores =np.concatenate([np.array(scores), np.zeros(end)])
@@ -182,7 +183,7 @@ class class_KitNet:
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_window_size =np.arange(200,1000) #2000
+        possible_window_size =np.arange(2,max(1000,int(len(X)/4))) #2000
         space2 ={ "window_size":hp.choice("window_size_index",possible_window_size)}
         trials = Trials()
         

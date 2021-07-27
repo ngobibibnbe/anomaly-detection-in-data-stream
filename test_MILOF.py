@@ -351,7 +351,7 @@ pool =mp.Pool(mp.cpu_count())
 
 def test () :                                                         
     
-    methods= {"ARIMAFD":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= {"KitNet":0, "ARIMAFD":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
         thresholds=[]
@@ -360,15 +360,15 @@ def test () :
         best_params= ["params" for i in time_taken]
         all_identified= ["no" for i in time_taken]
         for scoring  in scoring_metric:
-            for i, d in enumerate(base["Dataset"]):
-                dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
-            """with Manager() as mgr:
+            #for i, d in enumerate(base["Dataset"]):
+            #    dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
+            with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
-            """
+            
         """print(len(output))
         print(output[0])
         base[key+"_identified"] = all_identified

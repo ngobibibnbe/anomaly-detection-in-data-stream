@@ -77,7 +77,6 @@ def check (indice, real_indices,gap):
 def score_to_label(nbr_anomalies,scores,gap):
   #"""abnormal points has the right to produce various anomaly  in the same """
   
-  threshold=0.00001
   tmp=scores.copy()
   real_indices=np.array([0])
   real_indices=np.delete(real_indices, 0)
@@ -86,8 +85,6 @@ def score_to_label(nbr_anomalies,scores,gap):
     indices = [i for i,val in enumerate(tmp) if val==threshold]#tmp.index(max(tmp))
     tmp=np.delete(tmp, indices)
     indices= [i for i,val in enumerate(scores) if val==threshold] 
-    
-    
     indices =np.where(scores == threshold)
     for indice in indices:
         if check(indice,real_indices,gap):
@@ -116,18 +113,24 @@ class class_hstree:
             """
             Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
             """
+            initial_window=500
+            window_size=500
             np.random.seed(61)  # Fix random seed.
             X_all =np.array(X)
             iterator = ArrayStreamer(shuffle=False)
-            A=X_all.reshape(-1,1)
+            A=X_all#.reshape(-1,1)
+            #print()
             # Fit reference window integration to first 100 instances initially.
-            model=models.HalfSpaceTrees(feature_mins=np.array(min(A)), feature_maxes=np.array(max(A)), window_size=window_size, num_trees=num_trees, max_depth=max_depth, initial_window_X=X[:initial_window])
+            model=models.HalfSpaceTrees(feature_mins=np.array(A.min(axis=0)), feature_maxes=np.array(A.max(axis=0)), window_size=window_size, num_trees=num_trees, max_depth=max_depth, initial_window_X=X[:initial_window])
             scores=[]
             #scores= scores+ np.zeros(len(X_all[:initial_window])).tolist()
+            
             for x in tqdm(iterator.iter(X_all)):
                 model.fit_partial(x)  # Fit to the instance.
                 score = model.score_partial(x)  # Score the instance.
+                #print(score)
                 scores.append(score)
+            #print(scores)
             return scores
 
                         
@@ -167,14 +170,14 @@ class class_hstree:
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_initial_window=np.arange(500,1000)#[*range(1,100)]
+        possible_initial_window=np.arange(300,1000)#[*range(1,100)]
         possible_window_size =np.arange(300, 1000 ) #[*range(200,1000)]
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)
         , "window_size":hp.choice("window_size_index",possible_window_size)}
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]] )
