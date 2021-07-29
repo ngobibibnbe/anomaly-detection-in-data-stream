@@ -177,7 +177,7 @@ class class_hstree:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]] )

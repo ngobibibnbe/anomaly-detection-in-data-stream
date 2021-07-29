@@ -116,7 +116,7 @@ class class_KitNet:
             np.random.seed(61)  # Fix random seed.
             X_all =np.array(X)
             iterator = ArrayStreamer(shuffle=False)
-            print(X_all.shape)
+            #print(X_all.shape)
             X_all=X_all#.reshape(1,-1)[0:2]
             # Fit reference window integration to first 100 instances initially.
             model=models.KitNet( grace_anomaly_detector =window_size)#, )grace_feature_mapping=window_size,
@@ -130,20 +130,20 @@ class class_KitNet:
                     break"""
                 model.fit_partial(x)  # Fit to the instance.
                 score = model.score_partial(x)  # Score the instance.
-                print(score)
+                #print(score)
                 scores.append(score)
             
             scores =np.concatenate([np.array(scores), np.zeros(end)])
             scores =scores.squeeze()
             
-            print("****", np.argwhere(np.isnan(scores)).reshape(1,-1)[0])
+            #print("****", np.argwhere(np.isnan(scores)).reshape(1,-1)[0])
             try :
                 if len(np.isnan(scores).reshape(1,-1)[0])!=0:
                     scores[np.argwhere(np.isnan(scores)).reshape(1,-1)[0][0]] =0
             except:
                 print("erreur bizarre")
-            print("****", np.argwhere(np.isnan(scores)).reshape(1,-1)[0])
-            print(len(X_all),"***",len(scores))
+            #print("****", np.argwhere(np.isnan(scores)).reshape(1,-1)[0])
+            #print(len(X_all),"***",len(scores))
             return scores
 
                         
@@ -189,7 +189,7 @@ class class_KitNet:
         
         
         best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
-        print("****************")
+        #print("****************")
         #print(best)
         start =time.monotonic()
         real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]] )

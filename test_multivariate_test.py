@@ -109,7 +109,10 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
             # all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
             file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
-            print("*****", merlin_score[key])
+            #print("*****", merlin_score[key])
+            print("*****************************************")              
+            print(key,file1,file2,idx, best_params[key],time_taken[key], merlin_score[key], all_identified[key])
+            print("*****************************************")
             return (key,file1,file2,idx, best_param,time_taken_1, score, identified) # key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified
         """except:
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
@@ -141,7 +144,7 @@ def test () :
         all_identified= ["no" for i in time_taken]
         
         """
-    methods= { "ARIMAFD":0,"KitNet":0,"iforestASD":0,"HS-tree":0, "MILOF":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= { "ARIMAFD":0}#,"KitNet":0,"iforestASD":0,"HS-tree":0, "MILOF":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for  key, method in methods.items() :
         

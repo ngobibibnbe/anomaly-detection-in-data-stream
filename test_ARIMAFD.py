@@ -78,7 +78,7 @@ class class_ARIMAFD:
 
         #@jit
         def ARIMAFD(X,window_size):
-            X =np.array(X)
+            """X =np.array(X)
             X=X#.reshape(-1,1)
             X=pd.DataFrame(X,columns=df.columns)
             a =anomaly_detection(X)
@@ -88,6 +88,8 @@ class class_ARIMAFD:
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
             scores=np.concatenate([np.zeros(window_size),a.generate_tensor(ar_order=window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
             print(len(X),"****",len(scores), "***", scores)
+            """
+            scores=np.zeros(len(X))
             return scores
 
                 
@@ -133,7 +135,7 @@ class class_ARIMAFD:
         start =time.monotonic()
         real_scores= ARIMAFD(X,window_size=possible_window_size[best["window_size_index"]])
         end =time.monotonic()
-        print(real_scores)
+        #print(real_scores)
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         best_param={"window_size":possible_window_size[best["window_size_index"]] }
@@ -162,7 +164,7 @@ def test () :
         best_params= ["params" for i in time_taken]
         for idx, dataset in enumerate(base["Dataset"]):
             df = pd.read_csv("dataset/"+dataset, names=["value"])
-            print(dataset)
+            #print(dataset)
             if os.path.exists("real_nab_data/"+dataset) :
                 start =time.monotonic()
                 df = pd.read_csv("real_nab_data/"+dataset)
@@ -179,7 +181,7 @@ def test () :
 
 
             real_scores, scores_label, identified,score,best_params[idx], time_taken[idx]= class_ARIMAFD.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            print(len(identified),score)
+            #print(len(identified),score)
             break 
  
  
