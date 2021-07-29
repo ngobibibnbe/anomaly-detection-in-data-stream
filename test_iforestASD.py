@@ -113,10 +113,10 @@ class class_iforestASD:
             np.random.seed(61)  # Fix random seed.
             drift_detector = drift.ADWIN()
             X_all =X
-            """#iterator = ArrayStreamer(shuffle=False)
+            #iterator = ArrayStreamer(shuffle=False)
             model=models.IForestASD(initial_window_X=X_all[:initial],window_size=window_size)
             model.fit(X_all[:window_size])
-            model.n_estimators=100
+            model.n_estimators=25
 
             i=0
             scores=np.array([])
@@ -139,8 +139,9 @@ class class_iforestASD:
                         break
                 
                 score =np.array(score)
-                scores=np.concatenate((scores, score)) # scores+score"""""""""
-            scores =np.zeros(len(X_all))#np.array(model.score(X_all))
+                scores=np.concatenate((scores, score)) # scores+score
+            #scores =np.zeros(len(X_all))#np.array(model.score(X_all))
+            time.sleep(1)
             return scores
 
                 
@@ -178,12 +179,12 @@ class class_iforestASD:
             return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_window_size =np.arange(200,max(200,int(len(X)/4))) #[*range(200,1000)]
+        possible_nbr_tree =np.arange(15,35)#[*range(1,100)]
+        possible_window_size =np.arange(200,max(201,int(len(X)/4))) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30)
         #print(best)
         start =time.monotonic()
         real_scores= iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])

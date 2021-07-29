@@ -136,12 +136,9 @@ class class_MILOF:
             real_scores=[0 for i in X]
             scores =[1/i for i in scores]
             maxi=max(scores)
-            #print("**********************unique",len(np.unique(np.array(X))), "score len",len(scores), "real size", len(X))
             
             for idx, x in enumerate(X):
                 indices = [i for i, a in enumerate(np.array(X_unique) ) if (x == a).all()]
-                #print("**",indices)
-                #print("**",indices[0],len(scores))
                 real_scores[idx]=scores[indices[0]]/maxi
             #% cd /content/drive/MyDrive/Projets/stage
             return real_scores 
@@ -199,7 +196,7 @@ class class_MILOF:
             best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
             end=start =time.monotonic()
         else:
-            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
             #print(best)
             start =time.monotonic()
             real_scores= MILOF_(X,NumK=possible_NumK[best["NumK_index"]],KPar=possible_KPar[best["KPar_index"]],Bucket=possible_Bucket[best["Bucket_index"]] )

@@ -1,0 +1,1 @@
+python3 test_multivariate_test.py > multivariate_record.txt

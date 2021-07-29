@@ -188,7 +188,7 @@ class class_KitNet:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
         print("****************")
         #print(best)
         start =time.monotonic()

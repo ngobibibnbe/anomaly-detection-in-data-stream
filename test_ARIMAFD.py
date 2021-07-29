@@ -81,9 +81,6 @@ class class_ARIMAFD:
             X =np.array(X)
             X=X#.reshape(-1,1)
             X=pd.DataFrame(X,columns=df.columns)
-            """
-            
-            """
             a =anomaly_detection(X)
             a.tensor =a.generate_tensor(ar_order=window_size)
             a.proc_tensor(No_metric=1)
@@ -128,10 +125,10 @@ class class_ARIMAFD:
 
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_window_size =np.arange(20, 200) #[*range(200,1000)]
+        possible_window_size =np.arange(40, int(len(X)/4)) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= ARIMAFD(X,window_size=possible_window_size[best["window_size_index"]])

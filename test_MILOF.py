@@ -198,7 +198,7 @@ class class_MILOF:
             best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
             end=start =time.monotonic()
         else:
-            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
             #print(best)
             start =time.monotonic()
             real_scores= MILOF_(X,NumK=possible_NumK[best["NumK_index"]],KPar=possible_KPar[best["KPar_index"]],Bucket=possible_Bucket[best["Bucket_index"]] )
@@ -272,7 +272,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     if key=="iforestASD":
         real_scores, scores_label, identified,score,best_param, time_taken_1= class_iforestASD.test(X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
     if key=="ARIMAFD":
-        real_scores, scores_label, identified,score,best_param, time_taken_1= class_ARIMAFD.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        real_scores, scores_label, identified,score,best_param, time_taken_1= class_ARIMAFD.test(df[[column]],X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
     if key=="KitNet":
         real_scores, scores_label, identified,score,best_param, time_taken_1= class_KitNet.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
@@ -351,7 +351,7 @@ pool =mp.Pool(mp.cpu_count())
 
 def test () :                                                         
     
-    methods= {"KitNet":0, "ARIMAFD":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= {"ARIMAFD":0,    "KitNet":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
         thresholds=[]
