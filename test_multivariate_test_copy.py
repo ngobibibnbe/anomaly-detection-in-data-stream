@@ -109,8 +109,9 @@ def dataset_test(key,idx,dataset,scoring_metric="merlin"):
             # all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
             file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
+            print("*************************************************")
             print(key,file1,file2,idx, best_param,time_taken_1, score, identified)
-
+            print("*************************************************")
             return (key,file1,file2,idx, best_param,time_taken_1, score, identified) # key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified
         """except:
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
@@ -184,9 +185,9 @@ def test () :
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
-                file1=scoring+"_abnormal_multivariate_point_results.xlsx"
-                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
-                all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
+                """file1=scoring+"_abnormal_multivariate_point_results.xlsx"
+                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"""
+                #all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
                 #output =pool.apply_async(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ], callback=listener )
 
                 """manager =multiprocessing.Manager()
