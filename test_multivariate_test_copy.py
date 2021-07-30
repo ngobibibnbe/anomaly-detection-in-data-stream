@@ -142,7 +142,7 @@ def test () :
         all_identified= ["no" for i in time_taken]
         
         """
-    methods= { "iforestASD":0,"HS-tree":0, "MILOF":0}#"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= { "HS-tree":0, "MILOF":0}#"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for  key, method in methods.items() :
         

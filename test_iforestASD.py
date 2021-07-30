@@ -179,7 +179,7 @@ class class_iforestASD:
             return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_nbr_tree =np.arange(15,35)#[*range(1,100)]
+        possible_nbr_tree =np.arange(15,100)#[*range(1,100)]
         possible_window_size =np.arange(200,max(201,int(len(X)/4))) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree)}

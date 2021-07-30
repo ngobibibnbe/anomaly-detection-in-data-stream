@@ -172,17 +172,24 @@ class class_hstree:
 
         possible_initial_window=np.arange(300,1000)#[*range(1,100)]
         possible_window_size =np.arange(300, 1000 ) #[*range(200,1000)]
+        possible_nbr_tree =np.arange(15,100)#[*range(1,100)]  num_trees=25, max_depth=15
+        possible_max_depth= np.arange(15,100)
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)
-        , "window_size":hp.choice("window_size_index",possible_window_size)}
+        , "window_size":hp.choice("window_size_index",possible_window_size), 
+         "num_trees":hp.choice("num_trees",possible_nbr_tree), 
+         "max_depth":hp.choice("max_depth",possible_max_depth), 
+         }
         trials = Trials()
         
         
         best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
-        real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]] )
+        real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]],
+        num_trees=possible_nbr_tree [best["num_trees"]], max_depth=possible_max_depth [best["max_depth"]] )
         end =time.monotonic()
-        best_param={"initial_window":possible_initial_window[best["initial_window_index"]],"window_size":possible_window_size[best["window_size_index"]] }
+        best_param={"initial_window":possible_initial_window[best["initial_window_index"]],"window_size":possible_window_size[best["window_size_index"]] , 
+        "num_trees":possible_nbr_tree [best["num_trees"]], "max_depth":possible_max_depth [best["max_depth"]]}
 
         """except :
             print("there was an error")
