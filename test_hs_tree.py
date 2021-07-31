@@ -170,8 +170,8 @@ class class_hstree:
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_initial_window=np.arange(100,len(X/4))#[*range(1,100)]
-        possible_window_size =np.arange(100, len(X/4) ) #[*range(200,1000)]
+        possible_initial_window=np.arange(100,int(len(X)/4))#[*range(1,100)]
+        possible_window_size =np.arange(100, int(len(X)/4) ) #[*range(200,1000)]
         possible_nbr_tree =np.arange(15,35)#[*range(1,100)]  num_trees=25, max_depth=15
         possible_max_depth= np.arange(15,20)
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)

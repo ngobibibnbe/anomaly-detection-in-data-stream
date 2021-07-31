@@ -109,9 +109,8 @@ def dataset_test(key,idx,dataset,scoring_metric="merlin"):
             # all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
             file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
-            print("*************************************************")
             print(key,file1,file2,idx, best_param,time_taken_1, score, identified)
-            print("*************************************************")
+
             return (key,file1,file2,idx, best_param,time_taken_1, score, identified) # key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified
         """except:
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
@@ -137,12 +136,12 @@ thresholds=[]
 
 
 def test () :                                                         
-    """    merlin_score=np.zeros(len(base))
-        time_taken = np.zeros(len(base))
-        best_params= ["params" for i in time_taken]
-        all_identified= ["no" for i in time_taken]
-        
-        """
+    merlin_score=np.zeros(len(base))
+    time_taken = np.zeros(len(base))
+    best_params= ["params" for i in time_taken]
+    all_identified= ["no" for i in time_taken]
+    
+    
     methods= { "HS-tree":0, "MILOF":0}#"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for  key, method in methods.items() :
@@ -161,45 +160,23 @@ def test () :
                 file1=scoring+"_abnormal_multivariate_point_results.xlsx"
                 file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
                 all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
-            """merlin_score=mgr.dict()
-            time_taken =mgr.dict()
-            best_params= mgr.dict()
-            all_identified=mgr.dict()
 
-            for key , method in methods.items():
-                merlin_score[key]=mgr.list(list(np.zeros(len(base)) ))
-                time_taken[key] =mgr.list(list(np.zeros(len(base)) ))
-                best_params [key]= mgr.list( ["params" for i in time_taken])
-                all_identified[key] = mgr.list( ["no" for i in time_taken])
-                """
             merlin_score=mgr.list(list(np.zeros(len(base)) ))
             time_taken =mgr.list(list(np.zeros(len(base)) ))
             best_params= mgr.list( ["params" for i in time_taken])
             all_identified= mgr.list( ["no" for i in time_taken])
 
             for scoring  in scoring_metric:
-                """for i, d in enumerate(base["Dataset"]):
-                    dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
-                """
-                for idx,dataset in enumerate(base["Dataset"]) :
-                    pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
-                pool.close()
-                pool.join()
-                """file1=scoring+"_abnormal_multivariate_point_results.xlsx"
-                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"""
-                #all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
-                #output =pool.apply_async(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ], callback=listener )
-
-                """manager =multiprocessing.Manager()
-                #q=manager.Queue()
-                pool=multiprocessing.Pool()
+                
                 for idx,dataset in enumerate(base["Dataset"]) :
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
                 file1=scoring+"_abnormal_multivariate_point_results.xlsx"
                 file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
-                all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)"""
+                print("ok")
+                #all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
+                #output =pool.apply_async(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ], callback=listener )
 
 
 def all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified):
