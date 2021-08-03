@@ -95,6 +95,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
             dataset =directory+'/'+data_file_name
             df.to_csv(dataset, index=False)
 
+            print("****",key,idx, best_param,time_taken_1, score, identified)
             best_params[key][idx]=best_param
             time_taken[key][idx]=time_taken_1
             merlin_score[key][idx] = score

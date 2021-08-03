@@ -183,7 +183,7 @@ class class_KitNet:
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_window_size =np.arange(2,max(1000,int(len(X)/4))) #2000
+        possible_window_size =np.arange(1,30) #2000
         space2 ={ "window_size":hp.choice("window_size_index",possible_window_size)}
         trials = Trials()
         

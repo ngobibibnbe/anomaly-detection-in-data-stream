@@ -187,7 +187,7 @@ class class_MILOF:
 
         possible_NumK=np.arange(5,min(15,int(len(np.unique(np.array(X)))/2)))#[*range(1,100)]
         possible_KPar =np.arange(3,min(15,int(len(np.unique(np.array(X)))/3)) ) #[*range(200,1000)]
-        possible_Bucket =np.array([min(500,len(np.unique(np.array(X)))) ])
+        possible_Bucket =np.array([min(500,len(np.unique(np.array(X)))) ] )
         space2 ={"NumK":hp.choice("NumK_index",possible_NumK)
         , "KPar":hp.choice("KPar_index",possible_KPar), "Bucket":hp.choice("Bucket_index",possible_Bucket) }
         trials = Trials()
@@ -339,8 +339,8 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
     with mutex:
         #with open('point_methods_result_milof.xlsx') as csv_file:
-        insertion(scoring_metric+"_abnormal_point_results.xlsx")
-        insertion(scoring_metric+"_"+key+"_abnormal_point.xlsx")
+        #***insertion(scoring_metric+"_abnormal_point_results.xlsx")
+        insertion(scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
         #csv_file.flush()
     return idx, best_param,time_taken_1, score, identified
     
@@ -349,9 +349,9 @@ import multiprocessing as mp
 from multiprocessing import Manager
 pool =mp.Pool(mp.cpu_count())
 
-def test () :                                                         
+def test (meth) :                                                         
     
-    methods= {"ARIMAFD":0,    "KitNet":0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= {meth:0}#, "HS-tree":0,"MILOF":0,"HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
         thresholds=[]
@@ -369,83 +369,4 @@ def test () :
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
             
-        """print(len(output))
-        print(output[0])
-        base[key+"_identified"] = all_identified
-        base[key+"_Overlap_merlin"] = merlin_score
-        base[key+"best_param"] =best_params 
-        base[key+"time_taken"]= time_taken
-        for idx, best_param,time_taken, score, identified in output:
-            #base = pd.read_excel(base_file)
-            base[key+"_identified"] [idx]= identified
-            base[key+"_Overlap_merlin"] [idx]= score
-            base[key+"best_param"] [idx]=best_param
-            base[key+"time_taken"] [idx]= time_taken
-            base.to_excel("point_methods_result_milof.xlsx")
-
-        for idx, dataset in enumerate(base["Dataset"]):
-            dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,dataset)
-            if base["MILOFbest_param"][idx]=="params":
-                #print("**********",base["MILOFbest_param"][idx])
-                df = pd.read_csv("dataset/"+dataset, names=["value"])
-            
-            print(dataset)
-            if os.path.exists("real_nab_data/"+dataset) :
-                start =time.monotonic()
-                df = pd.read_csv("real_nab_data/"+dataset)
-            column="value"
-            if key=="test":
-                plot_fig(df[column], title=dataset)
-                continue##      
-            # reading the dataset
-            X =[[i] for i in df[column].values]
-
-            right=np.array(str(base["Position discord"][idx]).split(';'))
-            gap =int(base["discord length"][idx]) + int(int(base["Dataset length"][idx])/100)
-            nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
-
-
-            if key =="MILOF":
-                real_scores, scores_label, identified,score,best_params[idx], time_taken[idx]= class_MILOF.test(X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key =="iforestASD_SUB":
-                scores = iforestASD_SUB(X,500)
-            #""if  key=="MILOF":# and "art_load_balancer_spikes.csv" in dataset:
-                if len(np.unique(np.array(X),axis=0))<500:
-                    print(len(X))
-                    scores =[0.0 for i in X]
-                else:
-                    scores = method(X)""
-            if key=="HStree":
-                scores = method(X)
-            #calling methods
- 
- 
- 
-            
-            df["anomaly_score"]=real_scores
-            df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
-            identified =identified
-            print("anomalies at:" , identified, "while real are at:", str(base["Position discord"][idx]) )
-            merlin_score[idx] = score# overlapping_merlin(identified,str(base["Position discord"][idx]).split(';'), int(int(base["Dataset length"][idx])/100) ) 
-            directory = os.path.dirname(('streaming_results/'+key+'/'+dataset))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            data_file_name=dataset.split('/')[-1]
-            data_file_name =key+'_'+data_file_name
-            dataset =directory+'/'+data_file_name
-            df.to_csv(dataset, index=False)
-            
-            #thresholds.append(threshold)
-            print("terminé")
-            
-            
-            base[key+"_Overlap_merlin"] = merlin_score
-            base[key+"best_param"] = best_params
-            base[key+"time_taken"] = time_taken
-            #base[key+"_threshold"]=thresholds
-            base.to_excel("point_methods_result_milof.xlsx")"""
-            
-
-
-test()
-
+      

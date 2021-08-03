@@ -77,18 +77,22 @@ class class_ARIMAFD:
     def test(df,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
         #@jit
-        def ARIMAFD(X,window_size):
-            """X =np.array(X)
+        def ARIMAFD(X,AR_window_size, d=0):
+            X =np.array(X)
             X=X#.reshape(-1,1)
             X=pd.DataFrame(X,columns=df.columns)
+            print("*****check it", df.columns)
+            for i in range(d):
+                X=X.diff()
+
             a =anomaly_detection(X)
-            a.tensor =a.generate_tensor(ar_order=window_size)
+            a.tensor =a.generate_tensor(ar_order=AR_window_size)
             a.proc_tensor(No_metric=1)
             #print(a.evaluate_nab([[0.1,1]]))
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
-            scores=np.concatenate([np.zeros(window_size),a.generate_tensor(ar_order=window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
+            scores=np.concatenate([np.zeros(AR_window_size),a.generate_tensor(ar_order=AR_window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
             print(len(X),"****",len(scores), "***", scores)
-            """
+            
             scores=np.zeros(len(X))
             return scores
 
@@ -120,25 +124,26 @@ class class_ARIMAFD:
         
         def objective(args):
             print(args)
-            scores= ARIMAFD(X,window_size=args["window_size"])
+            scores= ARIMAFD(X,AR_window_size=args["AR_window_size"])
             scores =score_to_label(nbr_anomalies,scores,gap)
             
             return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_window_size =np.arange(40, int(len(X)/4)) #[*range(200,1000)]
-        space2 ={"window_size":hp.choice("window_size_index",possible_window_size)}
+        possible_AR_window_size =np.arange(10, 500) #[*range(200,1000)]
+        possible_d =np.arange(1,10)
+        space2 ={"AR_window_size":hp.choice("AR_window_size_index",possible_AR_window_size), "d":hp.choice("d_index",possible_d) }
         trials = Trials()
         best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
         #print(best)
         start =time.monotonic()
-        real_scores= ARIMAFD(X,window_size=possible_window_size[best["window_size_index"]])
+        real_scores= ARIMAFD(X,AR_window_size=possible_AR_window_size[best["AR_window_size_index"]],d=possible_d[best["d_index"]])
         end =time.monotonic()
         #print(real_scores)
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-        best_param={"window_size":possible_window_size[best["window_size_index"]] }
+        best_param={"AR_window_size":possible_AR_window_size[best["AR_window_size_index"]] , "differencing-order":possible_d[best["d_index"]]}
         #print("the final score is", scoring(scores_label),identified)
         return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
