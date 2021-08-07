@@ -49,7 +49,7 @@ def dataset_test(key,idx,dataset,scoring_metric="merlin"):
             ligne="erreur"
             
         #try :
-        if True :#ligne =="params" or flag:
+        if ligne =="params" or flag:
             oe_style = OneHotEncoder()
             for col in df.columns:
                 if df.dtypes[col]==np.object:
@@ -135,14 +135,14 @@ thresholds=[]
 #*****************************************************************************************************************************
 
 
-def test () :                                                         
+def test (meth) :                                                         
     merlin_score=np.zeros(len(base))
     time_taken = np.zeros(len(base))
     best_params= ["params" for i in time_taken]
     all_identified= ["no" for i in time_taken]
     
     
-    methods= { "HS-tree":0, "MILOF":0}#"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
+    methods= { meth:0}#"ARIMAFD":0}#, "HS-tree":0, "iforestASD":0}#"MILOF":0}# "MILOF":class_MILOF.test, "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
     scoring_metric=["merlin"] # ,"merlin"
     for  key, method in methods.items() :
         
@@ -221,8 +221,10 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 
             
 
-test()
+#test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
 
+test("iforestASD")
+test("HS-tree")
 
 
 

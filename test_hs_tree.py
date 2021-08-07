@@ -109,7 +109,7 @@ class class_hstree:
     def test(dataset,X,right,nbr_anomalies,gap, scoring_metric="merlin"):
 
         #@jit
-        def HStree(X, initial_window=500, window_size=500, num_trees=25, max_depth=15):
+        def HStree(X, initial_window, window_size, num_trees, max_depth):
             """
             Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
             """
@@ -163,7 +163,8 @@ class class_hstree:
             print(args)
             
             #try:
-            scores= HStree(X,initial_window=args["initial_window"],window_size=args["window_size"] )
+            scores= HStree(X,initial_window=args["initial_window"],window_size=args["window_size"],
+            num_trees=args["nbr_tree"], max_depth=args["max_depth"]   )
             scores= score_to_label(nbr_anomalies,scores,gap) 
             
             

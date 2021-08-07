@@ -183,7 +183,7 @@ class class_iforestASD:
 
         possible_nbr_tree =np.arange(15,50)#[*range(1,100)]
         possible_window_size =np.arange(200,max(201,int(len(X)/4))) #[*range(200,1000)]
-        possible_features =np.array([1])
+        possible_features =np.arange(1,np.array(X).shape[1])
         if np.array(X).shape[1]>1:
             possible_features =np.arange(1, np.array(X).shape[1]) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)

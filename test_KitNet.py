@@ -109,7 +109,7 @@ class class_KitNet:
     def test(X,right,nbr_anomalies,gap, scoring_metric="merlin"):
 
         #@jit
-        def Kitnet(X,window_size=1):
+        def Kitnet(X,window_size, max_size_ae):
             """
             Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
             """
@@ -119,7 +119,7 @@ class class_KitNet:
             #print(X_all.shape)
             X_all=X_all#.reshape(1,-1)[0:2]
             # Fit reference window integration to first 100 instances initially.
-            model=models.KitNet( grace_anomaly_detector =window_size)#, )grace_feature_mapping=window_size,
+            model=models.KitNet( grace_anomaly_detector =window_size,max_size_ae=max_size_ae  )#, )grace_feature_mapping=window_size,
             scores=[]
             #scores= scores+ np.zeros(len(X_all[:initial_window])).tolist()
             end=0
@@ -176,15 +176,18 @@ class class_KitNet:
             print(args)
             
             #try:
-            scores= Kitnet(X,window_size=args["window_size"] )
+            scores= Kitnet(X,window_size=args["window_size"],max_size_ae=args["max_size_ae"] )
             scores= score_to_label(nbr_anomalies,scores,gap) 
             
             
             return 1/(1+scoring(scores))#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
-        possible_window_size =np.arange(1,30) #2000
-        space2 ={ "window_size":hp.choice("window_size_index",possible_window_size)}
+        possible_window_size =np.arange(100, len(X)/4) #2000
+        possible_max_size_ae  =np.arange(1,np.array(X).shape[1]) #2000
+        print("******",possible_max_size_ae)
+        space2 ={ "window_size":hp.choice("window_size_index",possible_window_size),
+        "max_size_ae":hp.choice("max_size_ae ",possible_max_size_ae )}
         trials = Trials()
         
         
