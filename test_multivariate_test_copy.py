@@ -39,9 +39,10 @@ from test_KitNet import class_KitNet
 from test_Milof import class_MILOF
 
 def dataset_test(key,idx,dataset,scoring_metric="merlin"):
+    
         df = pd.read_csv("dataset/"+dataset)
         try: 
-            base2 = pd.read_excel(scoring_metric+"_abnormal_multivariate_point_results.xlsx") 
+            base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_multivariate_point_results.xlsx") 
             ligne = base2[key+"best_param"][idx]
         except :
             flag=True
@@ -95,18 +96,6 @@ def dataset_test(key,idx,dataset,scoring_metric="merlin"):
             dataset =directory+'/'+data_file_name
             df.to_csv(dataset, index=False)
 
-            """best_params[key][idx]=best_param
-            time_taken[key][idx]=time_taken_1
-            merlin_score[key][idx] = score
-            all_identified[key][idx] =identified"""
-            #thresholds.append(threshold)
-
-            """with mutex:
-                #with open('point_methods_result_milof.xlsx') as csv_file:
-                insertion(scoring_metric+"_abnormal_multivariate_point_results.xlsx")
-                insertion(scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx")
-                #csv_file.flush()"""
-            # all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
             file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
             file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
             print(key,file1,file2,idx, best_param,time_taken_1, score, identified)
@@ -157,8 +146,8 @@ def test (meth) :
                 time_taken[idx]=time_take
                 best_params[idx]=best_param
                 print(best_params,"***")
-                file1=scoring+"_abnormal_multivariate_point_results.xlsx"
-                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
+                file1="f1score_"+scoring+"_abnormal_multivariate_point_results.xlsx"
+                file2= "f1score_"+scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
                 all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
 
             merlin_score=mgr.list(list(np.zeros(len(base)) ))
@@ -169,6 +158,7 @@ def test (meth) :
             for scoring  in scoring_metric:
                 
                 for idx,dataset in enumerate(base["Dataset"]) :
+                    #dataset_test(key,idx,dataset,scoring)
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
@@ -223,8 +213,7 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 
 #test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
 
-test("iforestASD")
-test("HS-tree")
+test("KitNet")
 
 
 

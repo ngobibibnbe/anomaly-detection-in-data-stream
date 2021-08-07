@@ -103,6 +103,7 @@ class class_MILOF:
 
         #@jit
         def MILOF_(X,NumK,KPar,Bucket ):
+            Bucket=500
             """
             LOF ne tient pas en compte les concentrations de points identiques sinon on tombe à un problème d'infini
             """

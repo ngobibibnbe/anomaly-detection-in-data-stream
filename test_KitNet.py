@@ -36,6 +36,8 @@ from numba.extending import overload, register_jitable
 from numba.core.errors import TypingError
 actual_dataset=[0]
 from pysad.models import KitNet
+from sklearn import metrics
+
 
 # methode avec matrix profile
 def plot_time_series(df, title=None, ano=None, ano_name='None'):
@@ -64,33 +66,13 @@ def check (indice, real_indices,gap):
     Flag=True
     for real_indice in real_indices:
         #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(real_indice-gap,real_indice+gap) # " il y'avait -gap
+        search = np.arange(max(0,int(real_indice)-gap),int(real_indice)+gap) # " il y'avait -gap
         if indice in search:
             Flag=False
     return Flag
 
 #@jit(nopython=True)
-@register_jitable
-def score_to_label(nbr_anomalies,scores,gap):
-  #"""abnormal points has the right to produce various anomaly  in the same """
-  
-  threshold=0.00001
-  tmp=scores.copy()
-  real_indices=np.array([0])
-  real_indices=np.delete(real_indices, 0)
-  while len(real_indices)<nbr_anomalies and len(tmp)!=1:
-    threshold = np.amax(tmp) #max(tmp)
-    indices = [i for i,val in enumerate(tmp) if val==threshold]#tmp.index(max(tmp))
-    tmp=np.delete(tmp, indices)
-    indices= [i for i,val in enumerate(scores) if val==threshold] 
-    
-    
-    indices =np.where(scores == threshold)
-    for indice in indices:
-        if check(indice,real_indices,gap):
-            real_indices = np.append(real_indices,indice)
-        #print("**",threshold,(real_indices))
-  return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+#@register_jitable
 
 
 #ok
@@ -149,29 +131,59 @@ class class_KitNet:
                         
         #right=[387,948,1485]
         #nbr_anomalies=3
-        
         def scoring(scores):
             score=0
             for real in right:
                 real=int(real)
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
-            score=score/nbr_anomalies
-            if scoring_metric=="nab":
-                real_label = [int(0) for i in X]
-                for element in right:
-                    real_label[int(element)]=int(1)
-                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
-                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
-                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
-                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
-                    real_label_frame =real_label_frame.set_index('datetime')
-                    scores_frame =scores_frame.set_index('datetime')                
-                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
-                nab_score=nab_score["Standart"]  
-                score=nab_score       
+            recall=score/nbr_anomalies #recall
+
+            precision=0
+            identified =np.where(scores==1)
+            identified=identified[0]
+            for found in identified:
+                if not check(found,right,gap):
+                    precision+=1
+            print("****", precision, len(right))
+            precision =precision/len(identified)
+            print("*****", precision, len(identified))
+            score =2*(recall*precision)/(recall+precision)   
             return score
         
+        def score_to_label(nbr_anomalies,scores,gap):
+            Y_test=np.zeros(len(X))
+
+            for real in right:
+                real=int(real)
+                Y_test[real]=1
+
+            fpr, tpr, threshold = metrics.precision_recall_curve(Y_test,scores)
+            threshold=threshold[0]
+            #print(threshold)
+            """print("***",right, Y_test)
+            
+            threshold=0.00001
+            tmp=scores.copy()
+            real_indices=np.array([0])
+            real_indices=np.delete(real_indices, 0)
+            while len(real_indices)<nbr_anomalies and len(tmp)!=1:
+                threshold = np.amax(tmp) #max(tmp)
+                indices = [i for i,val in enumerate(tmp) if val==threshold]#tmp.index(max(tmp))
+                tmp=np.delete(tmp, indices)
+                indices= [i for i,val in enumerate(scores) if val==threshold] 
+                
+                
+                indices =np.where(scores == threshold)
+                for indice in indices:
+                    if check(indice,real_indices,gap):
+                        real_indices = np.append(real_indices,indice)
+                    #print("**",threshold,(real_indices))"""
+            return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+
+
+
+
         def objective(args):
             print(args)
             
@@ -185,19 +197,17 @@ class class_KitNet:
 
         possible_window_size =np.arange(100, len(X)/4) #2000
         possible_max_size_ae  =np.arange(1,np.array(X).shape[1]) #2000
-        print("******",possible_max_size_ae)
         space2 ={ "window_size":hp.choice("window_size_index",possible_window_size),
-        "max_size_ae":hp.choice("max_size_ae ",possible_max_size_ae )}
+        "max_size_ae":hp.choice("max_size_ae_index",possible_max_size_ae )}
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
         #print("****************")
-        #print(best)
         start =time.monotonic()
-        real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]] )
+        real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]], max_size_ae=possible_max_size_ae[best["max_size_ae_index"]] )
         end =time.monotonic()
-        best_param={"window_size":possible_window_size[best["window_size_index"]] }
+        best_param={"window_size":possible_window_size[best["window_size_index"]], "max_size_ae":possible_max_size_ae[best["max_size_ae_index"]] }
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start

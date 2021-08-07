@@ -45,7 +45,7 @@ def check (indice, real_indices,gap):
     Flag=True
     for real_indice in real_indices:
         #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(real_indice,real_indice+gap)
+        search = np.arange(real_indice-gap,real_indice+gap)
         if indice in search:
             Flag=False
     return Flag
@@ -107,8 +107,17 @@ class class_ARIMAFD:
                 real=int(real)
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
-            score=score/nbr_anomalies
-            if scoring_metric=="nab":
+            recall=score/nbr_anomalies #recall
+            precision=0
+            identified =np.where(np.array(scores)==1)
+            for found in identified:
+                if check(found,right,gap):
+                    precision+=1
+            precision =precision/len(identified)
+
+            score =2*(recall*precision)/(recall+precision)
+
+            """if scoring_metric=="nab":
                 real_label = [int(0) for i in X]
                 for element in right:
                     real_label[int(element)]=int(1)
@@ -120,7 +129,7 @@ class class_ARIMAFD:
                     scores_frame =scores_frame.set_index('datetime')                
                 nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
                 nab_score=nab_score["Standart"]  
-                return nab_score
+                return nab_score"""
             return score
         
         def objective(args):
