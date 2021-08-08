@@ -39,26 +39,6 @@ from pysad.models import KitNet
 from sklearn import metrics
 
 
-# methode avec matrix profile
-def plot_time_series(df, title=None, ano=None, ano_name='None'):
-	fig = go.Figure()
-	fig.add_trace(go.Scatter(y=df))
-	if ano!=None:
-		fig.add_trace(go.Scatter(y=df[ano], x=ano, name=ano_name))
-	if title:
-		fig.update_layout(title=title)
-	return fig
-
-def plot_fig (df, title, ):
-  plt.figure(figsize=(15, 7))
-  #ax = plt.plot(df.index.values, mp_adjusted)
-  ax = plt.plot(df.index.values, df.values)
-  plt.title(title)
-  plt.show()
-
-#@jit(nopython=True)
-
-
 def check (indice, real_indices,gap):
     Flag=True
     for real_indice in real_indices:
@@ -68,14 +48,6 @@ def check (indice, real_indices,gap):
         if indice in search:
             Flag=False
     return Flag
-
-#@jit(nopython=True)
-#@register_jitable
-
-
-#ok
-
-
 
 import math
 import sys

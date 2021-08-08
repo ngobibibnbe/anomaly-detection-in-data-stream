@@ -66,8 +66,8 @@ class class_hstree:
             """
             Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
             """
-            initial_window=500
-            window_size=500
+            initial_window=window_size
+            
             np.random.seed(61)  # Fix random seed.
             X_all =np.array(X)
             iterator = ArrayStreamer(shuffle=False)
@@ -132,7 +132,7 @@ class class_hstree:
             
             #try:
             scores= HStree(X,initial_window=args["initial_window"],window_size=args["window_size"],
-            num_trees=args["nbr_tree"], max_depth=args["max_depth"]   )
+            num_trees=args["num_trees"], max_depth=args["max_depth"]   )
             scores= score_to_label(nbr_anomalies,scores,gap) 
             
             
@@ -140,9 +140,9 @@ class class_hstree:
 
 
         possible_initial_window=np.arange(100,int(len(X)/4))#[*range(1,100)]
-        possible_window_size =np.arange(100, int(len(X)/4) ) #[*range(200,1000)]
+        possible_window_size =np.arange(200, max(201,int(len(X)/4)) ) #[*range(200,1000)]
         possible_nbr_tree =np.arange(15,50)#[*range(1,100)]  num_trees=25, max_depth=15
-        possible_max_depth= np.arange(15,25)
+        possible_max_depth= np.arange(10,20)
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)
         , "window_size":hp.choice("window_size_index",possible_window_size), 
          "num_trees":hp.choice("num_trees",possible_nbr_tree), 

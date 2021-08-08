@@ -86,7 +86,7 @@ from datetime import datetime
 sys.path.append('MILOF/lib')
 from MiLOF import MILOF
 
-from stream_discord import class_our
+from drag_stream import class_our
 from test_LAMP import class_LAMP
 from test_hs_tree import class_hstree
 from test_iforestASD import class_iforestASD
@@ -302,7 +302,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
         if key=="our":
-            real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+            real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
         df["anomaly_score"]=real_scores
         df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
@@ -387,3 +387,4 @@ def test (meth) :
                 output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)"""
 
+test("our")

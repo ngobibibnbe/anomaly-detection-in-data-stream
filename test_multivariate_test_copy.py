@@ -159,11 +159,12 @@ def test (meth) :
             for scoring  in scoring_metric:
                 
                 for idx,dataset in enumerate(base["Dataset"]) :
-                    pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
+                    dataset_test(key,idx,dataset,scoring)
+                """    pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
                 file1=scoring+"_abnormal_multivariate_point_results.xlsx"
-                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
+                file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"""
                 print("ok")
                 #all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
                 #output =pool.apply_async(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ], callback=listener )
@@ -215,7 +216,7 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 #test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
 
 #test("KitNet")
-test("iforestASD")
+#test("iforestASD")
 test("HS-tree")
 
 
