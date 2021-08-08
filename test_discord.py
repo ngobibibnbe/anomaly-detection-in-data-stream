@@ -170,7 +170,7 @@ def test (meth) :
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
-                output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
+                output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring) for i ,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
 
 test("our")
