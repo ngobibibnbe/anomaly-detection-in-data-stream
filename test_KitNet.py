@@ -58,15 +58,13 @@ def plot_fig (df, title, ):
 
 #@jit(nopython=True)
 
+
 def check (indice, real_indices,gap):
-    """
-    The idea of this check is to insure two neighbours anomalies are not throw since we are using the merlin score and the nab one. Let a method
-    give all its anomalies in the same window is not realy fair. 
-    """
     Flag=True
     for real_indice in real_indices:
+        real_indice=int(real_indice)
         #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(max(0,int(real_indice)-gap),int(real_indice)+gap) # " il y'avait -gap
+        search = np.arange(real_indice-gap,real_indice+gap)
         if indice in search:
             Flag=False
     return Flag
@@ -128,9 +126,6 @@ class class_KitNet:
             #print(len(X_all),"***",len(scores))
             return scores
 
-                        
-        #right=[387,948,1485]
-        #nbr_anomalies=3
         def scoring(scores):
             score=0
             for real in right:
@@ -192,7 +187,7 @@ class class_KitNet:
             thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
             threshold=thres
             arg=np.where(thresholds==thres)
-            print("*****",arg[0],threshold)
+            #print("*****",arg[0],threshold)
 
             """threshold=0.00001
             tmp=scores.copy()
@@ -233,7 +228,7 @@ class class_KitNet:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
         #print("****************")
         start =time.monotonic()
         real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]], max_size_ae=possible_max_size_ae[best["max_size_ae_index"]] )

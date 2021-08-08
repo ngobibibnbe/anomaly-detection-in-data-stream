@@ -41,6 +41,7 @@ from test_Milof import class_MILOF
 def dataset_test(key,idx,dataset,scoring_metric="merlin"):
     
         df = pd.read_csv("dataset/"+dataset)
+        flag =False
         try: 
             base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_multivariate_point_results.xlsx") 
             ligne = base2[key+"best_param"][idx]
@@ -50,7 +51,7 @@ def dataset_test(key,idx,dataset,scoring_metric="merlin"):
             ligne="erreur"
             
         #try :
-        if ligne =="params" or flag:
+        if True: # ligne =="params" or flag:
             oe_style = OneHotEncoder()
             for col in df.columns:
                 if df.dtypes[col]==np.object:
@@ -158,7 +159,6 @@ def test (meth) :
             for scoring  in scoring_metric:
                 
                 for idx,dataset in enumerate(base["Dataset"]) :
-                    dataset_test(key,idx,dataset,scoring)
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
@@ -214,8 +214,9 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 
 #test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
 
-test("KitNet")
-
+#test("KitNet")
+test("iforestASD")
+test("HS-tree")
 
 
 

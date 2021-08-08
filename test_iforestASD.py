@@ -39,53 +39,18 @@ from numba.extending import overload, register_jitable
 from numba.core.errors import TypingError
 from score_nab import evaluating_change_point
 # methode avec matrix profile
-def plot_time_series(df, title=None, ano=None, ano_name='None'):
-	fig = go.Figure()
-	fig.add_trace(go.Scatter(y=df))
-	if ano!=None:
-		fig.add_trace(go.Scatter(y=df[ano], x=ano, name=ano_name))
-	if title:
-		fig.update_layout(title=title)
-	return fig
 
-def plot_fig (df, title, ):
-  plt.figure(figsize=(15, 7))
-  #ax = plt.plot(df.index.values, mp_adjusted)
-  ax = plt.plot(df.index.values, df.values)
-  plt.title(title)
-  plt.show()
 
- #@jit(nopython=True)
-#@register_jitable
 def check (indice, real_indices,gap):
     Flag=True
     for real_indice in real_indices:
+        real_indice=int(real_indice)
         #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(real_indice,real_indice+gap)
+        search = np.arange(real_indice-gap,real_indice+gap)
         if indice in search:
             Flag=False
     return Flag
 
-#@jit(nopython=True)
-#@register_jitable
-def score_to_label(nbr_anomalies,scores,gap):
-  #"""abnormal points has the right to produce various anomaly  in the same """
-  tmp=scores.copy()
-  real_indices=np.array([0])
-  real_indices=np.delete(real_indices, 0)
-  while len(real_indices)<nbr_anomalies and len(tmp)!=1:
-    threshold = np.amax(tmp) #max(tmp)
-    indices = [i for i,val in enumerate(tmp) if val==threshold]#tmp.index(max(tmp))
-    tmp=np.delete(tmp, indices)
-    indices= [i for i,val in enumerate(scores) if val==threshold] 
-    for indice in indices:
-        if check(indice,real_indices,gap):
-            real_indices = np.append(real_indices,indice)
-        #print("**",threshold,(real_indices))
-  return np.where(scores<threshold,0,1)# [0 if i<threshold else 1 for i in scores ]
-
-
-#ok
 
 def overlapping_merlin(identified, expected,gap):
   score=0
@@ -150,27 +115,44 @@ class class_iforestASD:
         #right=[387,948,1485]
         #nbr_anomalies=3
         
+        
         def scoring(scores):
             score=0
             for real in right:
                 real=int(real)
                 if 1 in scores[real-gap:real+gap]:
                     score+=1
-            score=score/nbr_anomalies
-            if scoring_metric=="nab":
-                real_label = [int(0) for i in X]
-                for element in right:
-                    real_label[int(element)]=int(1)
-                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
-                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
-                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
-                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
-                    real_label_frame =real_label_frame.set_index('datetime')
-                    scores_frame =scores_frame.set_index('datetime')                
-                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
-                nab_score=nab_score["Standart"]  
-                return nab_score
+            recall=score/nbr_anomalies #recall
+
+            precision=0
+            identified =np.where(scores==1)
+            identified=identified[0]
+            for found in identified:
+                if not check(found,right,gap):
+                    precision+=1
+            precision =precision/len(identified)
+            try :
+                score =2*(recall*precision)/(recall+precision) 
+            except :
+                score=0  
             return score
+        
+        def score_to_label(nbr_anomalies,scores,gap):
+            
+            thresholds = np.unique(scores)
+            f1_scores =[]
+            for threshold in thresholds:
+                labels=np.where(scores<threshold,0,1)
+                f1_scores.append(scoring(labels))
+            
+            q = list(zip(f1_scores, thresholds))
+
+            thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+            threshold=thres
+            arg=np.where(thresholds==thres)
+           
+            return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+
         
         def objective(args):
             print(args)
@@ -185,7 +167,7 @@ class class_iforestASD:
         possible_window_size =np.arange(200,max(201,int(len(X)/4))) #[*range(200,1000)]
         possible_features =np.arange(np.array(X).shape[1],np.array(X).shape[1])
         if np.array(X).shape[1]>1:
-            possible_features =np.arange(1, np.array(X).shape[1]) #[*range(200,1000)]
+            possible_features =np.arange(np.array(X).shape[1]-1, np.array(X).shape[1]) #[*range(200,1000)]
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree) , "max_features":hp.choice("max_features",possible_features)}
         trials = Trials()
