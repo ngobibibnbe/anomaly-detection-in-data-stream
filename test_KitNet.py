@@ -145,25 +145,56 @@ class class_KitNet:
             for found in identified:
                 if not check(found,right,gap):
                     precision+=1
-            print("****", precision, len(right))
+            #print("****", precision, len(right))
             precision =precision/len(identified)
-            print("*****", precision, len(identified))
-            score =2*(recall*precision)/(recall+precision)   
+            #print("*****", precision, len(identified))
+            try :
+                score =2*(recall*precision)/(recall+precision) 
+            except :
+                score=0  
             return score
         
         def score_to_label(nbr_anomalies,scores,gap):
-            Y_test=np.zeros(len(X))
+            """Y_test=np.zeros(len(X))
 
             for real in right:
                 real=int(real)
                 Y_test[real]=1
 
-            fpr, tpr, threshold = metrics.precision_recall_curve(Y_test,scores)
-            threshold=threshold[0]
-            #print(threshold)
-            """print("***",right, Y_test)
+            precision, recall, threshold = metrics.precision_recall_curve(Y_test,scores)
+            print("***",precision)
+            f1score =np.array([2*precision[i]*recall[i]/(recall[i]+precision[i]) for i, pre in enumerate(precision)])
             
-            threshold=0.00001
+            arg = np.argmax(f1score)
+            precision, recall, thresholds = metrics.precision_recall_curve(Y_test,scores)
+            precision, recall, thresholds =precision[:-1], recall[:-1], thresholds[:-1]
+            f1_score = 2*precision*recall/(precision + recall)
+
+            q = list(zip(f1_score, thresholds))
+
+            thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+            threshold=thres
+            arg=np.where(thresholds==thres)
+            print("*****",threshold,  f1_score[arg])
+            #hold[arg]
+            #print("***",arg, f1score[arg])
+            #print(threshold)
+            print("***",right, Y_test)"""
+            
+            thresholds = np.unique(scores)
+            f1_scores =[]
+            for threshold in thresholds:
+                labels=np.where(scores<threshold,0,1)
+                f1_scores.append(scoring(labels))
+            
+            q = list(zip(f1_scores, thresholds))
+
+            thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+            threshold=thres
+            arg=np.where(thresholds==thres)
+            print("*****",arg[0],threshold)
+
+            """threshold=0.00001
             tmp=scores.copy()
             real_indices=np.array([0])
             real_indices=np.delete(real_indices, 0)
@@ -178,7 +209,7 @@ class class_KitNet:
                 for indice in indices:
                     if check(indice,real_indices,gap):
                         real_indices = np.append(real_indices,indice)
-                    #print("**",threshold,(real_indices))"""
+                    #print("**",threshold,(real_indices))"""""""""
             return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
 
 

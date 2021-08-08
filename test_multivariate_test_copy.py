@@ -158,7 +158,7 @@ def test (meth) :
             for scoring  in scoring_metric:
                 
                 for idx,dataset in enumerate(base["Dataset"]) :
-                    #dataset_test(key,idx,dataset,scoring)
+                    dataset_test(key,idx,dataset,scoring)
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
@@ -207,6 +207,7 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
                 base2.to_excel("streaming_results/"+file, index=False)
             else:
                 base2.to_excel(file, index=False)
+                print("****deposé")
 
 
             
