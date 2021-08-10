@@ -53,7 +53,7 @@ all_identified= ["no" for i in time_taken]
 def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring_metric="merlin"):
 
     try: 
-        base2 = pd.read_excel(scoring_metric+"_abnormal_multivariate_point_results.xlsx") 
+        base2 = pd.read_excel(scoring_metric+"_discord_results.xlsx") 
         ligne = base2[key+"best_param"][idx]
     except :
         flag=True
@@ -68,27 +68,33 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         if os.path.exists("real_nab_data/"+dataset) :
             df = pd.read_csv("real_nab_data/"+dataset)
         column="value"
-        if key=="test":
-            plot_fig(df[column], title=dataset)
+
         X =[[i] for i in df[column].values]
         right=np.array(str(base["Position discord"][idx]).split(';'))
         nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
 
         if scoring_metric=="merlin":
-            #gap =int(int(base["Dataset length"][idx])/100)
-            # discord length
-            gap =int(int(base["discord length"][idx])/2)
+            gap =int(int(base["discord length"][idx]))
         if scoring_metric=="nab":
             gap = int(len(X)/(20*nbr_anomalies))
        
         if key=="LAMP":
-            base2 = pd.read_excel("point_methods_result_milof.xlsx")
+            """base2 = pd.read_excel("point_methods_result_milof.xlsx")
             if base2[key+"best_param"][idx]=='params':
-                return idx, 0,0, 0, 0
-            real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+                return idx, 0,0, 0, 0"""
+            real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
         if key=="our":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+
+        if key=="hotsax":
+            real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_mp(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+
+        if key=="matrix_profile":
+            real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_hotsax(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+
+
+
 
         df["anomaly_score"]=real_scores
         df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
@@ -119,7 +125,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2[key+"best_param"] [idx]=str(best_params [idx])
                 base2[key+"time_taken"] [idx]= time_taken[idx]
             except :
-                base2 = pd.read_excel("discord.xlsx")
+                base2 = pd.read_excel(scoring_metric+"_discord_results.xlsx")
                 base2[key+"_identified"] = all_identified
                 base2[key+"_Overlap_merlin"] = merlin_score
                 base2[key+"best_param"] =best_params 
@@ -143,7 +149,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         with mutex:
             with open('abnormal_point_datasets.xlsx') as csv_file:
                 insertion(scoring_metric+"_discord_results.xlsx")
-                insertion("result/"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
+                insertion("result/"+scoring_metric+"_"+key+"discord.xlsx")
                 csv_file.flush()
     return idx, best_param,time_taken_1, score, identified
     
@@ -162,15 +168,17 @@ def test (meth) :
         for scoring  in scoring_metric:
             #dataset_test(merlin_score,best_params,time_taken,all_identified,key,1,base["Dataset"][1],scoring_metric=scoring)
 
-            """for i, d in enumerate(base["Dataset"]):
+            for i, d in enumerate(base["Dataset"]):
                 dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
                 #break"""
-            with Manager() as mgr:
+            """with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring) for i ,dataset in enumerate(base["Dataset"])  ] )
-                print ("**** merlin score",merlin_score)
+                print ("**** merlin score",merlin_score)"""
 
-test("our")
+
+test("matrix_profile")
+test("hotsax")

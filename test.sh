@@ -1,1 +1,1 @@
-python3 test_multivariate_test_copy.py > multivariate_record.txt
+python3 test_MILOF.py > milof_record.txt

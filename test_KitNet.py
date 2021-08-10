@@ -119,6 +119,21 @@ class class_KitNet:
                 score =2*(recall*precision)/(recall+precision) 
             except :
                 score=0  
+            
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                score=nab_score  
+
             return score
         
         def score_to_label(nbr_anomalies,scores,gap):
@@ -200,7 +215,7 @@ class class_KitNet:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
         #print("****************")
         start =time.monotonic()
         real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]], max_size_ae=possible_max_size_ae[best["max_size_ae_index"]] )

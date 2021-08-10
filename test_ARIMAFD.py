@@ -72,11 +72,24 @@ class class_ARIMAFD:
             for found in identified:
                 if not check(found,right,gap):
                     precision+=1
-            precision =precision/len(identified)
+            precision =precision/len(identified) # la methode est precise si elle arrive à plus trouveer de zones anormales que non normales 
             try :
                 score =2*(recall*precision)/(recall+precision) 
             except :
                 score=0  
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                score=nab_score  
             return score
         
         def score_to_label(nbr_anomalies,scores,gap):

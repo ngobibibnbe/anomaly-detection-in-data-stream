@@ -253,7 +253,8 @@ class class_our:
 
       possible_window=np.array([gap,gap])#arange(100,gap+200)
       possible_threshold=np.arange(1,10,0.5)
-      possible_training=np.arange(100, int(len(X)/4))
+      right_discord =[ int(discord) for discord in right]
+      possible_training=np.arange([1, min(min(right_discord),int(len(X)/4))] )
       possible_cluster=np.arange(10, 30)
       space2 ={"training":hp.choice("training_index",possible_training),
       "window":hp.choice("window_index",possible_window), "threshold":hp.choice("threshold_index",possible_threshold),

@@ -9,6 +9,9 @@ import numpy as np
 import matrixprofile as mp
 import time
 from score_nab import evaluating_change_point
+import matrixprofile as mp
+#from matrixprofile import *
+from saxpy.hotsax import find_discords_hotsax
 # methode avec matrix profile
 def plot_time_series(df, title=None, ano=None, ano_name='None'):
 	fig = go.Figure()
@@ -37,185 +40,273 @@ def check (indice, real_indices,gap):
             Flag=False
     return Flag
 
-#@jit(nopython=True)
-def score_to_label(nbr_anomalies,scores,gap):
-  #"""abnormal points has the right to produce various anomaly  in the same """
-  
-  threshold=0.00001
-  tmp=scores.copy()
-  real_indices=np.array([0])
-  real_indices=np.delete(real_indices, 0)
-  while len(real_indices)<nbr_anomalies and len(tmp)!=1:
-    threshold = np.amax(tmp) #max(tmp)
-    indices = [i for i,val in enumerate(tmp) if val==threshold]#tmp.index(max(tmp))
-    tmp=np.delete(tmp, indices)
-    indices= [i for i,val in enumerate(scores) if val==threshold] 
-    
-    
-    indices =np.where(scores == threshold)
-    for indice in indices:
-        if check(indice,real_indices,gap):
-            real_indices = np.append(real_indices,indice)
-        #print("**",threshold,(real_indices))
-  return np.where(scores<threshold,0,1)# [0 if i<threshold else 1 for i in scores ]
-
-
-
 
 class class_LAMP:
     def __init__(self):
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
-    def LAMP(self,X,w):
-        #diviser le dataframe 
-        ts_train =X[:int(len(X)/4)]
-        ts_val =X[int(len(X)/4) : ]#int(3*len(X)/8)]
-        ts_test = X#X[int(3*len(X)/8):]
-        mp_train = mp.compute(ts_train,w)['mp']
-        mp_test = mp.compute(ts_test,w)['mp']
-        mp_val = mp.compute(ts_val,w)['mp']
-        mat={}
-        mat["ts_train"]=ts_train.reshape(-1,1)
-        #print(mat["ts_train"])
-        mat["ts_test"] =ts_test.reshape(-1,1)
-        mat["ts_val"]=ts_val.reshape(-1,1)
-        mat["mp_test"]=mp_test.reshape(-1,1)
-        mat["mp_train"]=mp_train.reshape(-1,1)
-        mat["mp_val"]=mp_val.reshape(-1,1)
-        scipy.io.savemat("dataset/test_tmp.mat", mat)
-        os.system("python3 LAMP-conference_code/train_neural_net_LAMP.py "+str(w)+" dataset/test_tmp.mat ./logs") # remplacer 100 par la vrai taille de fenêtre
-        scores =pd.read_csv('predicted_matrix_profile.txt', sep=" ", header=None, names=["column"] )
-        #os.system("rm -r logs")
-        #print(scores, "**")
-        scores=list(scores["column"].values)
-        scores =[1/(i+1) for i in scores]
-        print(len(scores), len(ts_train), len(ts_test), len(mp_test), len(ts_val) )
-        scores =scores+list(np.zeros(len(ts_test)-len(scores) ))
-        print(len(scores), len(ts_train), len(ts_test), len(mp_test), len(ts_val) )
-        return scores
-
+    
     
     def test(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
         #@jit
         
-      def LAMP(X,w):
-        #diviser le dataframe 
-        ts_train =X[:int(len(X)/4)]
-        ts_val =X[int(len(X)/4) : ]#int(3*len(X)/8)]
-        ts_test = X#X[int(3*len(X)/8):]
-        mp_train = mp.compute(ts_train,w)['mp']
-        mp_test = mp.compute(ts_test,w)['mp']
-        mp_val = mp.compute(ts_val,w)['mp']
-        mat={}
-        mat["ts_train"]=ts_train.reshape(-1,1)
-        #print(mat["ts_train"])
-        mat["ts_test"] =ts_test.reshape(-1,1)
-        mat["ts_val"]=ts_val.reshape(-1,1)
-        mat["mp_test"]=mp_test.reshape(-1,1)
-        mat["mp_train"]=mp_train.reshape(-1,1)
-        mat["mp_val"]=mp_val.reshape(-1,1)
-        try :
-            scipy.io.savemat("dataset/test_tmp.mat", mat)
-            os.system("python3 LAMP-conference_code/train_neural_net_LAMP.py "+str(w)+" dataset/test_tmp.mat ./logs "+dataset) # remplacer 100 par la vrai taille de fenêtre
-            scores =pd.read_csv('LAMP-conference_code/predict/predicted_matrix_profile_'+dataset+'.txt', sep=" ", header=None, names=["column"] )
-            #os.system("rm -r logs")
-            #print(scores, "**")
-            scores=list(scores["column"].values)
-            print("**************************************",len(scores), len(ts_test), len(mp_test), len(ts_val) )
-            scores =scores+list(np.zeros(len(ts_test)-len(scores) ))
-        except:
-            scores =list(np.zeros(len(ts_test)))
-        print(len(scores), len(ts_train), len(ts_test), len(mp_test), len(ts_val) )
-        return scores
+      def LAMP(X,training_size,w=gap):
+            #diviser le dataframe 
+            ts_train =X[:training_size]
+            ts_val =X[: training_size]#int(3*len(X)/8)]
+            ts_test = X#X[int(3*len(X)/8):]
+            mp_train = mp.compute(ts_train,w)['mp']
+            mp_test = mp.compute(ts_test,w)['mp']
+            mp_val = mp.compute(ts_val,w)['mp']
+            mat={}
+            mat["ts_train"]=ts_train.reshape(-1,1)
+            #print(mat["ts_train"])
+            mat["ts_test"] =ts_test.reshape(-1,1)
+            mat["ts_val"]=ts_val.reshape(-1,1)
+            mat["mp_test"]=mp_test.reshape(-1,1)
+            mat["mp_train"]=mp_train.reshape(-1,1)
+            mat["mp_val"]=mp_val.reshape(-1,1)
+            try :
+                scipy.io.savemat("dataset/test_tmp.mat", mat)
+                os.system("python3 LAMP-conference_code/train_neural_net_LAMP.py "+str(w)+" dataset/test_tmp.mat ./logs "+dataset) # remplacer 100 par la vrai taille de fenêtre
+                scores =pd.read_csv('LAMP-conference_code/predict/predicted_matrix_profile_'+dataset+'.txt', sep=" ", header=None, names=["column"] )
+                #os.system("rm -r logs")
+                #print(scores, "**")
+                scores=list(scores["column"].values)
+                print("**************************************",len(scores), len(ts_test), len(mp_test), len(ts_val) )
+                scores =scores+list(np.zeros(len(ts_test)-len(scores) ))
+            except:
+                scores =list(np.zeros(len(ts_test)))
+            print(len(scores), len(ts_train), len(ts_test), len(mp_test), len(ts_val) )
+            
+            return scores
 
                         
-        #right=[387,948,1485]
-        #nbr_anomalies=3
         
       def scoring(scores):
-          score=0
-          for real in right:
-              real=int(real)
-              if 1 in scores[real-gap:real+gap]:
-                  score+=1
-          score=score/nbr_anomalies
-          if scoring_metric=="nab":
-                real_label = [int(0) for i in X]
-                for element in right:
-                    real_label[int(element)]=int(1)
-                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
-                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
-                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
-                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
-                    real_label_frame =real_label_frame.set_index('datetime')
-                    scores_frame =scores_frame.set_index('datetime')                
-                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
-                nab_score=nab_score["Standart"]  
-                score=nab_score  
-          return score
+            identified =np.where(scores.squeeze()==1)[0]
+            sub_identified=np.array([])
+            sub_right=np.array([])
+            for identify in identified:
+                sub_identified=np.concatenate([sub_identified,np.arange(identify, identify+gap)])
+            for identify in right:
+                identify =int(identify)
+                sub_right=np.concatenate([sub_right,np.arange(identify, identify+gap)])
+            sub_identified =np.unique(sub_identified)
+            sub_right =np.unique(sub_right)  
+            recall =len(np.intersect1d(sub_identified,sub_right))/len(sub_right)
+            precision = len(np.intersect1d(sub_identified,sub_right))/len(sub_identified)
+            try :
+                score =2*(recall*precision)/(recall+precision) 
+            except :
+                score=0.0  
+            return score 
+
+
+        
+      def score_to_label(nbr_anomalies,scores,gap):
+        
+        thresholds = np.unique(scores)
+        max =np.amax(thresholds)
+        thresholds = sorted(thresholds, reverse=True)
+        thresholds =thresholds[:min(len(thresholds),30)]
+
+        f1_scores =[]
+        
+        for threshold in thresholds:
+            labels=np.where(scores<threshold,0,1)
+            a=scoring(labels)
+            f1_scores.append(a) 
+            print("***************score_to_label",a, "*",threshold)
+        print("***************score_to_label")             
+        q = list(zip(f1_scores, thresholds))
+        thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+        threshold=thres
+        arg=np.where(thresholds==thres)
+        print("***************score_to_label")
+        return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+
+
+
+      right_discord =[ int(discord) for discord in right]
+      start =time.monotonic()
+      real_scores= LAMP(X,training_size=min(min(right_discord),int(len(X)/4)) )
+      end =time.monotonic()       
+      best_param={"window":min(min(right_discord),int(len(X)/4)) }
+      if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
+          best_param={"window":"error" }
+      scores_label =score_to_label(nbr_anomalies,real_scores,gap)
+      print("*******terminado")
+      identified =[key for key, val in enumerate(scores_label) if val in [1]] 
+      print("*******terminado")
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start 
+
+
+
     
+    def test_mp(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
+
+        #@jit
+        
+      def Matrix_profile(dataset,nbr_of_discord,n=gap):
+            df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
+            column="column1"
+            profile = mp.compute(df[column].values,n)
+            discords = mp.discover.discords(profile, exclusion_zone=int(n/2), k=nbr_of_discord)["discords"]
+            scores =np.zeros(len(X))
+            scores[discords]=1
+            print("*****************check scores",scores)
+            return scores
+
+                        
+        
+      def scoring(scores):
+            identified =np.where(scores.squeeze()==1)[0]
+            sub_identified=np.array([])
+            sub_right=np.array([])
+            for identify in identified:
+                sub_identified=np.concatenate([sub_identified,np.arange(identify, identify+gap)])
+            for identify in right:
+                identify =int(identify)
+                sub_right=np.concatenate([sub_right,np.arange(identify, identify+gap)])
+            sub_identified =np.unique(sub_identified)
+            sub_right =np.unique(sub_right)  
+            recall =len(np.intersect1d(sub_identified,sub_right))/len(sub_right)
+            precision = len(np.intersect1d(sub_identified,sub_right))/len(sub_identified)
+            try :
+                    score =2*(recall*precision)/(recall+precision) 
+            except :
+                score=0.0  
+            return score 
+
+      def score_to_label(nbr_anomalies,scores,gap):
+                
+                thresholds = np.unique(scores)
+                f1_scores =[]
+                for threshold in thresholds:
+                    labels=np.where(scores<threshold,0,1)
+                    f1_scores.append(scoring(labels))              
+                q = list(zip(f1_scores, thresholds))
+                thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+                threshold=thres
+                arg=np.where(thresholds==thres)
+                
+                return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+
       def objective(args):
           print(args)
           #try:
-          scores= LAMP(X,w=args["window"])
+          scores= Matrix_profile(dataset,nbr_of_discord= args["nbr_anomalies"], n=gap)
           scores =score_to_label(nbr_anomalies,scores,gap)
-          
-
           return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
-
-      possible_window=np.arange(100,gap+200)
-      space2 ={"window":hp.choice("window_index",possible_window)}
+      possible_nbr_anomalies=np.arange(max(1,nbr_anomalies-1),nbr_anomalies+3)
+      space2 ={"nbr_anomalies":hp.choice("nbr_anomalies_index",possible_nbr_anomalies)}
       trials = Trials()
       
       
       best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
       #print(best)
       start =time.monotonic()
-      real_scores= LAMP(X,w=possible_window[best["window_index"]] )
+      real_scores= Matrix_profile(X,dataset,nbr_of_discord=possible_nbr_anomalies[best["nbr_anomalies_index"]],n=gap )
       end =time.monotonic()
       
           
-      best_param={"window":possible_window[best["window_index"]] }
+      best_param={"nbr_of_discord":possible_nbr_anomalies[best["nbr_anomalies_index"]] }
       if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
-          best_param={"window":"error" }
-
-      """except :
-          print("there was an error")
-          best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
-      """
-        #real_scores=np.zeros(len(X))
-      #iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
-      
+          best_param={"The model is porviding null every where" }
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-      #print("the final score is", scoring(scores_label),identified)
       return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
+
+    def test_hotsax(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
+
+        #@jit
         
+      def Matrix_profile(dataset,nbr_of_discord,n=gap):
+            df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
+            column="column1"
+            profile = mp.compute(df[column].values,n)
+            discords = mp.discover.discords(profile, exclusion_zone=int(n/2), k=nbr_of_discord)["discords"]
+            scores =np.zeros(len(X))
+            scores[discords]=1
+            print("*****************check scores",scores)
+            return scores
 
+      def hotsax(dataset,nbr_of_discord,n,w,a):
+            df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
+            column="column1"
+            dd =df[column].to_numpy() #genfromtxt("data/ecg0606_1.csv", delimiter=',') 
+            discords = find_discords_hotsax(dd, win_size=n, num_discords=nbr_of_discord, a_size=a,paa_size=w)
+            d=[]
+            for discord in discords:
+                d.append(discord[0])
+            scores =np.zeros(len(X))
+            scores[d]=1
+            print("*****************check scores",scores)
+            return scores               
+        
+      def scoring(scores):
+            identified =np.where(scores.squeeze()==1)[0]
+            sub_identified=np.array([])
+            sub_right=np.array([])
+            for identify in identified:
+                sub_identified=np.concatenate([sub_identified,np.arange(identify, identify+gap)])
+            for identify in right:
+                identify =int(identify)
+                sub_right=np.concatenate([sub_right,np.arange(identify, identify+gap)])
+            sub_identified =np.unique(sub_identified)
+            sub_right =np.unique(sub_right)  
+            recall =len(np.intersect1d(sub_identified,sub_right))/len(sub_right)
+            precision = len(np.intersect1d(sub_identified,sub_right))/len(sub_identified)
+            try :
+                    score =2*(recall*precision)/(recall+precision) 
+            except :
+                score=0.0  
+            return score 
 
-"""
-    
-base_file ='Pattern_lengths_and_Number_of_discords2.xlsx'
-base = pd.read_excel(base_file)
-merlin_score=np.zeros(len(base))
-best_params = np.zeros(len(base))
-time_taken = np.zeros(len(base))
-best_params= ["params" for i in time_taken]"""
-"""for idx, dataset in enumerate(base["Dataset"]):
-    df = pd.read_csv("dataset/"+dataset, names=["value"])
-    if os.path.exists("real_nab_data/"+dataset) :
-        df = pd.read_csv("real_nab_data/"+dataset)
-    print(dataset)
-    #if dataset=="nab-data/artificialWithAnomaly/art_daily_flatmiddle.csv":
-    column="value"
-    X =[[i] for i in df[column].values]
-    column="value"
-    #print(df[column].values) X,right,nbr_anomalies,gap
-    scores = class_LAMP.test(dataset,df[column].values,[2000],1,200)
-    print("****",len(scores), len(X))
-#break    # reading the dataset
-"""
+      def score_to_label(nbr_anomalies,scores,gap):
+                
+                thresholds = np.unique(scores)
+                f1_scores =[]
+                for threshold in thresholds:
+                    labels=np.where(scores<threshold,0,1)
+                    f1_scores.append(scoring(labels))              
+                q = list(zip(f1_scores, thresholds))
+                thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
+                threshold=thres
+                arg=np.where(thresholds==thres)
+                
+                return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
+
+      def objective(args):
+          print(args)
+          #try:
+          scores= Matrix_profile(dataset,nbr_of_discord=args["nbr_anomalies"],n=gap,w=args["paa_size"],a=args["nbr_symbols"])
+          scores =score_to_label(nbr_anomalies,scores,gap)
+          return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
+
+      possible_nbr_anomalies=np.arange(max(1,nbr_anomalies-1),nbr_anomalies+3)
+      possible_paa=np.arange(3,15)
+      possible_symbols=np.arange(3,15)
+      space2 ={"nbr_anomalies":hp.choice("nbr_anomalies_index",possible_nbr_anomalies),
+      "paa_size":hp.choice("paa_size_index",possible_paa), "nbr_symbols":hp.choice("nbr_symbols_index",possible_paa)}
+      trials = Trials()
+      
+      
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+      #print(best)
+      start =time.monotonic()
+      real_scores= hotsax(dataset,nbr_of_discord=best["nbr_anomalies_index"],n=gap,w=best["paa_size_index"],a=best["nbr_symbols_index"] )
+      end =time.monotonic()
+      
+          
+      best_param={"nbr_of_discord":possible_nbr_anomalies[best["nbr_anomalies_index"]],"paa_size":best["paa_size_index"],"number_symbols":best["nbr_symbols_index"]  }
+      if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
+          best_param={"The model is porviding null every where" }
+      scores_label =score_to_label(nbr_anomalies,real_scores,gap)
+      identified =[key for key, val in enumerate(scores_label) if val in [1]] 
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start

@@ -159,7 +159,9 @@ def test (meth) :
             for scoring  in scoring_metric:
                 
                 for idx,dataset in enumerate(base["Dataset"]) :
-                    dataset_test(key,idx,dataset,scoring)
+                    m=dataset_test(key,idx,dataset,scoring)
+                    listener(m)
+
                 """    pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
@@ -216,8 +218,8 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 #test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
 
 #test("KitNet")
-#test("iforestASD")
-test("HS-tree")
+test("iforestASD")
+#test("HS-tree")
 
 
 

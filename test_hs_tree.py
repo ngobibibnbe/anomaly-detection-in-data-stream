@@ -108,7 +108,20 @@ class class_hstree:
             try :
                 score =2*(recall*precision)/(recall+precision) 
             except :
-                score=0  
+                score=0 
+            if scoring_metric=="nab":
+                real_label = [int(0) for i in X]
+                for element in right:
+                    real_label[int(element)]=int(1)
+                    real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
+                    scores_frame=pd.DataFrame(scores, columns=['changepoint']) 
+                    real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
+                    scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
+                    real_label_frame =real_label_frame.set_index('datetime')
+                    scores_frame =scores_frame.set_index('datetime')                
+                nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
+                nab_score=nab_score["Standart"]  
+                score=nab_score   
             return score
         
         def score_to_label(nbr_anomalies,scores,gap):
@@ -141,7 +154,7 @@ class class_hstree:
 
         possible_initial_window=np.arange(100,int(len(X)/4))#[*range(1,100)]
         possible_window_size =np.arange(200, max(201,int(len(X)/4)) ) #[*range(200,1000)]
-        possible_nbr_tree =np.arange(15,50)#[*range(1,100)]  num_trees=25, max_depth=15
+        possible_nbr_tree =np.arange(15,35)#[*range(1,100)]  num_trees=25, max_depth=15
         possible_max_depth= np.arange(10,20)
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)
         , "window_size":hp.choice("window_size_index",possible_window_size), 
@@ -151,7 +164,7 @@ class class_hstree:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]],
