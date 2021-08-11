@@ -128,9 +128,9 @@ class class_LAMP:
 
       right_discord =[ int(discord) for discord in right]
       start =time.monotonic()
-      real_scores= LAMP(X,training_size=min(min(right_discord),int(len(X)/4)) )
+      real_scores= LAMP(X,training_size=int(len(X)/4) )
       end =time.monotonic()       
-      best_param={"window":min(min(right_discord),int(len(X)/4)) }
+      best_param={"window":int(len(X)/4) }
       if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
           best_param={"window":"error" }
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
@@ -223,6 +223,7 @@ class class_LAMP:
             df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
             column="column1"
             dd =df[column].to_numpy() #genfromtxt("data/ecg0606_1.csv", delimiter=',') 
+            print("***",dd,"len discord:",n, "m_discords:",nbr_of_discord,a,w )
             discords = find_discords_hotsax(dd, win_size=n, num_discords=nbr_of_discord, a_size=a,paa_size=w)
             d=[]
             for discord in discords:
@@ -280,7 +281,7 @@ class class_LAMP:
       trials = Trials()
       
       
-      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
       #print(best)
       start =time.monotonic()
       real_scores= hotsax(dataset,nbr_of_discord=best["nbr_anomalies_index"],n=gap,w=best["paa_size_index"],a=best["nbr_symbols_index"] )
@@ -288,8 +289,8 @@ class class_LAMP:
       
           
       best_param={"nbr_of_discord":possible_nbr_anomalies[best["nbr_anomalies_index"]],"paa_size":best["paa_size_index"],"number_symbols":best["nbr_symbols_index"]  }
-      if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
-          best_param={"The model is porviding null every where" }
+      """if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
+          best_param={"The model is porviding null every where" }"""
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
       return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start

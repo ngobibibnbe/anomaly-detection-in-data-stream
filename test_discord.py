@@ -55,6 +55,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     try: 
         base2 = pd.read_excel(scoring_metric+"_discord_results.xlsx") 
         ligne = base2[key+"best_param"][idx]
+        flag=False 
     except :
         flag=True
         print("erreur de fichier ")
@@ -181,5 +182,4 @@ def test (meth) :
                 print ("**** merlin score",merlin_score)"""
 
 
-test("matrix_profile")
 test("hotsax")

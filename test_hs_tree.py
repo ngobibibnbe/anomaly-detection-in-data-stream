@@ -126,7 +126,7 @@ class class_hstree:
         
         def score_to_label(nbr_anomalies,scores,gap):
             
-            thresholds = np.unique(scores)[:20]
+            thresholds = sorted(np.unique(scores), reverse=True)[:20]
             f1_scores =[]
             for threshold in thresholds:
                 labels=np.where(scores<threshold,0,1)

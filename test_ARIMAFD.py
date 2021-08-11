@@ -46,16 +46,16 @@ class class_ARIMAFD:
             X =np.array(X)
             X=X#.reshape(-1,1)
             X=pd.DataFrame(X,columns=df.columns)
-            for i in range(d):
+            """for i in range(d):
                 X=X.diff()
-            X=X.iloc[d:]
+            X=X.iloc[d:]"""
             a =anomaly_detection(X)
             a.tensor =a.generate_tensor(ar_order=AR_window_size)
             a.proc_tensor(No_metric=1)
             #print(a.evaluate_nab([[0.1,1]]))
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
             scores=np.concatenate([np.zeros(AR_window_size),a.generate_tensor(ar_order=AR_window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
-            scores=np.concatenate([scores,np.zeros(d)])# a.bin_metric]) # Joining arr1 and arr2
+            #scores=np.concatenate([scores,np.zeros(d)])# a.bin_metric]) # Joining arr1 and arr2
             return scores
 
         def scoring(scores):
@@ -118,7 +118,7 @@ class class_ARIMAFD:
 
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_AR_window_size =np.arange(10, 200) #[*range(200,1000)]
+        possible_AR_window_size =np.arange(10, 100) #[*range(200,1000)]
         possible_d =np.arange(1,10)
         space2 ={"AR_window_size":hp.choice("AR_window_size_index",possible_AR_window_size), "d":hp.choice("d_index",possible_d) }
         trials = Trials()
@@ -136,73 +136,4 @@ class class_ARIMAFD:
 
 
 
-
-
-
-# Test pipeline   les threshold des methodes coe iforest seront récupérés dans NAB parce qu'NAB à une fonction de score automatisé. 
-
-#@jit                   
-def test () :                                                         
-    base_file ='abnormal_point_datasets.xlsx'
-    base = pd.read_excel(base_file)
-    methods= {"ARIMA":0}# "iforestASD_SUB":iforestASD_SUB,"subSequenceiforestASD":iforestASD } #"iforestASD":iforestASD, "HStree":HStree "MILOF":MILOF
-    
-        
-    for key, method in methods.items():
-        thresholds=[]
-        merlin_score=np.zeros(len(base))
-        best_params = np.zeros(len(base))
-        time_taken = np.zeros(len(base))
-        best_params= ["params" for i in time_taken]
-        for idx, dataset in enumerate(base["Dataset"]):
-            df = pd.read_csv("dataset/"+dataset, names=["value"])
-            #print(dataset)
-            if os.path.exists("real_nab_data/"+dataset) :
-                start =time.monotonic()
-                df = pd.read_csv("real_nab_data/"+dataset)
-            column="value"
-            if key=="test":
-                plot_fig(df[column], title=dataset)
-                continue##      
-            # reading the dataset
-            X =[[i] for i in df[column].values]
-
-            right=np.array(str(base["Position discord"][idx]).split(';'))
-            gap = int(int(base["Dataset length"][idx])/100)
-            nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
-
-
-            real_scores, scores_label, identified,score,best_params[idx], time_taken[idx]= class_ARIMAFD.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            #print(len(identified),score)
-            break 
- 
- 
- 
-            
-            df["anomaly_score"]=real_scores
-            df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
-            identified =identified
-            #print("anomalies at:" , identified, "while real are at:", str(base["Position discord"][idx]) )
-            merlin_score[idx] = score# overlapping_merlin(identified,str(base["Position discord"][idx]).split(';'), int(int(base["Dataset length"][idx])/100) ) 
-            directory = os.path.dirname(('streaming_results/'+key+'/'+dataset))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            data_file_name=dataset.split('/')[-1]
-            data_file_name =key+'_'+data_file_name
-            dataset =directory+'/'+data_file_name
-            df.to_csv(dataset, index=False)
-            
-            #thresholds.append(threshold)
-            print("terminé")
-            
-            
-            base[key+"_Overlap_merlin"] = merlin_score
-            base[key+"best_param"] = best_params
-            base[key+"time_taken"] = time_taken
-            #base[key+"_threshold"]=thresholds
-            base.to_excel("point_methods_result.xlsx")
-            
-
-
-#test()
 

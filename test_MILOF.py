@@ -194,6 +194,6 @@ def test (meth) :
                 key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
 
-test("ARIMAFD")
+test("HS-tree")
 """test("Hs-tree")
 """
