@@ -87,10 +87,10 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         if key=="our":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
-        if key=="hotsax":
+        if key=="matrix_profile":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_mp(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
-        if key=="matrix_profile":
+        if key=="hotsax":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_hotsax(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
 
@@ -132,6 +132,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2[key+"time_taken"]= time_taken
                 
                 if key in file:
+
                     print(best_params[idx], best_param)
                     for key2,value in best_params[idx].items():
                         base2["best_param"+key2] ="RAS"

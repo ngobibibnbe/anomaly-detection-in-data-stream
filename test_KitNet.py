@@ -163,7 +163,7 @@ class class_KitNet:
             #print(threshold)
             print("***",right, Y_test)"""
             
-            thresholds = np.unique(scores)
+            thresholds = np.unique(scores)[:20]
             f1_scores =[]
             for threshold in thresholds:
                 labels=np.where(scores<threshold,0,1)

@@ -94,7 +94,7 @@ class class_ARIMAFD:
         
         def score_to_label(nbr_anomalies,scores,gap):
             
-            thresholds = np.unique(scores)
+            thresholds = np.unique(scores)[:20]
             f1_scores =[]
             for threshold in thresholds:
                 labels=np.where(scores<threshold,0,1)

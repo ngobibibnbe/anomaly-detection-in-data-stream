@@ -118,13 +118,10 @@ class class_LAMP:
             labels=np.where(scores<threshold,0,1)
             a=scoring(labels)
             f1_scores.append(a) 
-            print("***************score_to_label",a, "*",threshold)
-        print("***************score_to_label")             
         q = list(zip(f1_scores, thresholds))
         thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
         threshold=thres
         arg=np.where(thresholds==thres)
-        print("***************score_to_label")
         return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
 
 
@@ -137,9 +134,7 @@ class class_LAMP:
       if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
           best_param={"window":"error" }
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
-      print("*******terminado")
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-      print("*******terminado")
       return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start 
 
 
@@ -156,7 +151,6 @@ class class_LAMP:
             discords = mp.discover.discords(profile, exclusion_zone=int(n/2), k=nbr_of_discord)["discords"]
             scores =np.zeros(len(X))
             scores[discords]=1
-            print("*****************check scores",scores)
             return scores
 
                         
@@ -209,13 +203,13 @@ class class_LAMP:
       best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
       #print(best)
       start =time.monotonic()
-      real_scores= Matrix_profile(X,dataset,nbr_of_discord=possible_nbr_anomalies[best["nbr_anomalies_index"]],n=gap )
+      real_scores= Matrix_profile(dataset,nbr_of_discord=possible_nbr_anomalies[best["nbr_anomalies_index"]],n=gap )
       end =time.monotonic()
       
           
       best_param={"nbr_of_discord":possible_nbr_anomalies[best["nbr_anomalies_index"]] }
-      if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
-          best_param={"The model is porviding null every where" }
+      """if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
+          best_param={"The model is porviding null every where" }"""
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
       return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
@@ -224,17 +218,6 @@ class class_LAMP:
 
     def test_hotsax(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
 
-        #@jit
-        
-      def Matrix_profile(dataset,nbr_of_discord,n=gap):
-            df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
-            column="column1"
-            profile = mp.compute(df[column].values,n)
-            discords = mp.discover.discords(profile, exclusion_zone=int(n/2), k=nbr_of_discord)["discords"]
-            scores =np.zeros(len(X))
-            scores[discords]=1
-            print("*****************check scores",scores)
-            return scores
 
       def hotsax(dataset,nbr_of_discord,n,w,a):
             df = pd.read_csv("dataset/"+dataset, sep="  ", header=None, names=["column1"])
@@ -285,7 +268,7 @@ class class_LAMP:
       def objective(args):
           print(args)
           #try:
-          scores= Matrix_profile(dataset,nbr_of_discord=args["nbr_anomalies"],n=gap,w=args["paa_size"],a=args["nbr_symbols"])
+          scores= hotsax(dataset,nbr_of_discord=args["nbr_anomalies"],n=gap,w=args["paa_size"],a=args["nbr_symbols"])
           scores =score_to_label(nbr_anomalies,scores,gap)
           return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
