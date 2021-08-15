@@ -5,9 +5,9 @@ import json
 import os 
 from datetime import datetime
 
-base='combined_windows.json'
+base='nab_label.json'
 #methods= {"hotsax":hotsax} #"Matrix_profile":Matrix_profile,"hotsax":hotsax,"deepant_execution":deepant_execution, "MERLIN":MERLIN
-fileObject = open("combined_windows.json", "r")
+fileObject = open(base, "r")
 jsonContent = fileObject.read()
 aList = json.loads(jsonContent)
 base_file ='Pattern_lengths_and_Number_of_discords.xlsx'

@@ -45,10 +45,6 @@ mutex =multiprocessing.Lock()
 base_file ='discord.xlsx'
 base = pd.read_excel(base_file)
 
-merlin_score=np.zeros(len(base))
-time_taken = np.zeros(len(base))
-best_params= ["params" for i in time_taken]
-all_identified= ["no" for i in time_taken]
 
 def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring_metric="merlin"):
 
@@ -62,7 +58,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         ligne="erreur"
         
     #try :
-    if ligne =="params" or flag:
+    if True :#ligne =="params" or flag:
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)
@@ -90,7 +86,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
         if key=="matrix_profile":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_mp(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-
+            print("*****")
         if key=="hotsax":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test_hotsax(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
@@ -153,12 +149,16 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 insertion(scoring_metric+"_discord_results.xlsx")
                 insertion("result/"+scoring_metric+"_"+key+"discord.xlsx")
                 csv_file.flush()
-    return idx, best_param,time_taken_1, score, identified
+        return idx, best_param,time_taken_1, score, identified
     
 
 import multiprocessing as mp
 from multiprocessing import Manager
 pool =mp.Pool(mp.cpu_count())
+merlin_score=np.zeros(len(base))
+time_taken = np.zeros(len(base))
+best_params= ["params" for i in time_taken]
+all_identified= ["no" for i in time_taken]
 
 def test (meth) :                                                         
     
@@ -169,17 +169,21 @@ def test (meth) :
         
         for scoring  in scoring_metric:
             #dataset_test(merlin_score,best_params,time_taken,all_identified,key,1,base["Dataset"][1],scoring_metric=scoring)
+            merlin_score=np.zeros(len(base))
+            time_taken = np.zeros(len(base))
+            best_params= ["params" for i in time_taken]
+            all_identified= ["no" for i in time_taken]
 
-            for i, d in enumerate(base["Dataset"]):
+            """for i, d in enumerate(base["Dataset"]):
                 dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
                 #break"""
-            """with Manager() as mgr:
+            with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
                 all_identified= mgr.list([]) + ["no" for i in time_taken]
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring) for i ,dataset in enumerate(base["Dataset"])  ] )
-                print ("**** merlin score",merlin_score)"""
+                print ("**** merlin score",merlin_score)
 
-
+test("matrix_profile")
 test("hotsax")

@@ -152,7 +152,7 @@ class class_MILOF:
 
         possible_NumK=np.arange(10,min(50,int(len(np.unique(np.array(X)))/2)))#[*range(1,100)]
         possible_KPar =np.arange(3,min(30,int(len(np.unique(np.array(X)))/3)) ) #[*range(200,1000)]
-        possible_Bucket =np.array([min(500,len(np.unique(np.array(X)))) ])
+        possible_Bucket =np.array([min(1000,len(np.unique(np.array(X)))) ])
         space2 ={"NumK":hp.choice("NumK_index",possible_NumK)
         , "KPar":hp.choice("KPar_index",possible_KPar), "Bucket":hp.choice("Bucket_index",possible_Bucket) }
         trials = Trials()
@@ -163,7 +163,7 @@ class class_MILOF:
             best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
             end=start =time.monotonic()
         else:
-            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
             #print(best)
             start =time.monotonic()
             real_scores= MILOF_(X,NumK=possible_NumK[best["NumK_index"]],KPar=possible_KPar[best["KPar_index"]],Bucket=possible_Bucket[best["Bucket_index"]] )

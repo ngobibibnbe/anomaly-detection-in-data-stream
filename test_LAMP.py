@@ -281,7 +281,7 @@ class class_LAMP:
       trials = Trials()
       
       
-      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
       #print(best)
       start =time.monotonic()
       real_scores= hotsax(dataset,nbr_of_discord=best["nbr_anomalies_index"],n=gap,w=best["paa_size_index"],a=best["nbr_symbols_index"] )

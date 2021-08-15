@@ -58,21 +58,21 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     try: 
         base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx") 
         ligne = base2[key+"best_param"][idx]
+        flag=False
     except :
         flag=True
         print("erreur de fichier ")
         ligne="erreur"
         
     #try :
-    if True: #ligne =="params" or flag:
+    if   True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)
         if os.path.exists("real_nab_data/"+dataset) :
             df = pd.read_csv("real_nab_data/"+dataset)
         column="value"
-        if key=="test":
-            plot_fig(df[column], title=dataset)
+
         # reading the dataset
         X =[[i] for i in df[column].values]
         right=np.array(str(base["Position discord"][idx]).split(';'))
@@ -128,7 +128,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
             all_identified[idx] =identified
             try:
                 
-                base2 = pd.read_excel(file) 
+                base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx") 
                 
                 base2[key+"_identified"] [idx]= all_identified[idx]
                 base2[key+"_Overlap_merlin"] [idx]= score
@@ -136,10 +136,10 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2[key+"time_taken"] [idx]= time_taken[idx]
                 print("**********************************************************")
                 print("**********************************************************")
-                print(dataset, score, best_param, time_taken_1, identified)
+                print(dataset, score, best_param, time_taken_1)
                 print("**********************************************************")
             except :
-                base2 = pd.read_excel("real_known_point_datasets.xlsx")
+                base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
                 base2[key+"_identified"] = all_identified
                 base2[key+"_Overlap_merlin"] = merlin_score
                 base2[key+"best_param"] =best_params 
@@ -165,7 +165,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
                 insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
                 csv_file.flush()
-    return idx, best_param,time_taken_1, score, identified
+        return idx, best_param,time_taken_1, score, identified
     
 
 import multiprocessing as mp
@@ -182,9 +182,9 @@ def test (meth) :
         for scoring  in scoring_metric:
             #dataset_test(merlin_score,best_params,time_taken,all_identified,key,1,base["Dataset"][1],scoring_metric=scoring)
 
-            #for i, d in enumerate(base["Dataset"]):
-                #dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
-            
+            """for i, d in enumerate(base["Dataset"]):
+                dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
+            """
             with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
@@ -193,7 +193,5 @@ def test (meth) :
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,
                 key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
-
-test("HS-tree")
-"""test("Hs-tree")
-"""
+            
+test("ARIMAFD")

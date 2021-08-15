@@ -46,16 +46,16 @@ class class_ARIMAFD:
             X =np.array(X)
             X=X#.reshape(-1,1)
             X=pd.DataFrame(X,columns=df.columns)
-            """for i in range(d):
+            for i in range(d):
                 X=X.diff()
-            X=X.iloc[d:]"""
+            X=X.iloc[d:]
             a =anomaly_detection(X)
             a.tensor =a.generate_tensor(ar_order=AR_window_size)
             a.proc_tensor(No_metric=1)
             #print(a.evaluate_nab([[0.1,1]]))
             #print(a.generate_tensor(ar_order=100)[:,0,0].shape)
             scores=np.concatenate([np.zeros(AR_window_size),a.generate_tensor(ar_order=AR_window_size)[:,0,0].squeeze()])# a.bin_metric]) # Joining arr1 and arr2
-            #scores=np.concatenate([scores,np.zeros(d)])# a.bin_metric]) # Joining arr1 and arr2
+            scores=np.concatenate([scores,np.zeros(d)])# a.bin_metric]) # Joining arr1 and arr2
             return scores
 
         def scoring(scores):
@@ -94,7 +94,7 @@ class class_ARIMAFD:
         
         def score_to_label(nbr_anomalies,scores,gap):
             
-            thresholds = np.unique(scores)[:20]
+            thresholds = np.unique(scores)
             f1_scores =[]
             for threshold in thresholds:
                 labels=np.where(scores<threshold,0,1)
@@ -119,16 +119,18 @@ class class_ARIMAFD:
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
         possible_AR_window_size =np.arange(10, 100) #[*range(200,1000)]
-        possible_d =np.arange(1,10)
+        possible_d =np.arange(0,10)
         space2 ={"AR_window_size":hp.choice("AR_window_size_index",possible_AR_window_size), "d":hp.choice("d_index",possible_d) }
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.rand.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= ARIMAFD(X,AR_window_size=possible_AR_window_size[best["AR_window_size_index"]],d=possible_d[best["d_index"]])
         end =time.monotonic()
         #print(real_scores)
+        r= time.monotonic()
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
+        print("**************** time for the research",time.monotonic()-r)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         best_param={"AR_window_size":possible_AR_window_size[best["AR_window_size_index"]] , "differencing-order":possible_d[best["d_index"]]}
         #print("the final score is", scoring(scores_label),identified)
