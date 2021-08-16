@@ -215,7 +215,7 @@ class class_KitNet:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.rand.suggest, max_evals=30,trials = trials)
         #print("****************")
         start =time.monotonic()
         real_scores= Kitnet(X,window_size=possible_window_size[best["window_size_index"]], max_size_ae=possible_max_size_ae[best["max_size_ae_index"]] )

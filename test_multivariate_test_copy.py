@@ -167,7 +167,7 @@ def test (meth) :
                 pool.join()
                 file1=scoring+"_abnormal_multivariate_point_results.xlsx"
                 file2= scoring+"_"+key+"_abnormal_multivarie_point.xlsx"""
-                print("ok")"
+                print("ok")
                 #all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
                 #output =pool.apply_async(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ], callback=listener )
 
@@ -214,71 +214,15 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
 
 
             
-
 #test() output =pool.starmap(dataset_test, [(key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
+import sys
 
-#test("KitNet")
-test("iforestASD")
+print("***",sys.argv)
+
+test(sys.argv[1])
+#test("iforestASD")
 #test("HS-tree")
 
 
 
 
-
-
-
-
-""""
-
-
-def listener(key,file1,file2,idx, best_param,time_taken, merlin_score, identified):
-    def all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified):
-        print("****************", file1, key)
-        insertion(file1,key,idx,best_params,time_taken,merlin_score, all_identified)
-        insertion(file2,key,idx,best_params,time_taken,merlin_score, all_identified)
-
-    def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
-            #try:
-            if key in file: 
-                base2 = pd.to_excel("streaming_results/"+file)
-            else:
-                base2 = pd.to_excel(file) 
-            
-            base2[key+"_identified"] [idx]= all_identified[idx]
-            base2[key+"_Overlap_merlin"] [idx]= merlin_score[idx]
-            base2[key+"best_param"] [idx]=str(best_params [idx])
-            base2[key+"time_taken"] [idx]= time_taken[idx]
-            except :
-                base2 = pd.read_csv(base_file)
-                base2[key+"_identified"] = all_identified
-                base2[key+"_Overlap_merlin"] = merlin_score
-                base2[key+"best_param"] =best_params 
-                base2[key+"time_taken"]= time_taken
-                print("***************************************except***************")
-                if key in file:
-                    for key2,value in best_params[idx].items():
-                        base2["best_param"+key2] =best_params[idx][key2]
-
-            if key in file:
-                for key2,value in best_params[idx].items():
-                    base2["best_param"+key2][idx] =best_params[idx][key2]
-                base2.to_excel("streaming_results/"+file, index=False)
-            else:
-                base2.to_excel(file, index=False)
-                print("***************************************writing***************")
-
-    '''listens for messages on the q, writes to file. '''
-
-    #with open(file, 'w') as f:
-    while 1:
-        print("****", "je suis choqué")
-        m = q.get()
-        if m == 'kill':
-            print("***killed")
-            break
-        #all_insertion(m[0],m[1],m[2],m[3],m[4],m[5],m[6],m[7])#idx,best_params,time_taken,merlin_score, all_identified)
-        insertion(m[1],m[0],m[3],m[4],m[5],m[6],m[7])
-        print("****", "je suis choqué")
-        #f.flush()
-        
-"""

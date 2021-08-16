@@ -171,7 +171,7 @@ class class_iforestASD:
         space2 ={"window_size":hp.choice("window_size_index",possible_window_size)
         , "n_estimators":hp.choice("n_estimators_index",possible_nbr_tree) , "max_features":hp.choice("max_features",possible_features)}
         trials = Trials()
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=10)
+        best = fmin(fn=objective,space=space2, algo=tpe.rand.suggest, max_evals=30)
         #print(best)
         start =time.monotonic()
         real_scores= iforestASD(X,max_features= possible_features[best["max_features"]],  window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])

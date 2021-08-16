@@ -65,7 +65,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         ligne="erreur"
         
     #try :
-    if   True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
+    if  True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)
@@ -161,16 +161,16 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
 
         with mutex:
-            with open('real_known_point_datasets.xlsx') as csv_file:
-                insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
-                insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
-                csv_file.flush()
+            #with open('real_known_point_datasets.xlsx') as csv_file:
+            insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
+            insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
+            #csv_file.flush()
         return idx, best_param,time_taken_1, score, identified
     
 
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(mp.cpu_count())
+pool =mp.Pool(mp.cpu_count()-5)
 
 def test (meth) :                                                         
     
@@ -194,4 +194,10 @@ def test (meth) :
                 key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
             
-test("ARIMAFD")
+import sys
+
+print("***",sys.argv)
+
+test(sys.argv[1])
+#test("iforestASD")
+#test("HS-tree")

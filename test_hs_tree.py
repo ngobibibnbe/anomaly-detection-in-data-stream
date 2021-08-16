@@ -155,7 +155,7 @@ class class_hstree:
         possible_initial_window=np.arange(100,int(len(X)/4))#[*range(1,100)]
         possible_window_size =np.arange(200, max(201,int(len(X)/4)) ) #[*range(200,1000)]
         possible_nbr_tree =np.arange(15,35)#[*range(1,100)]  num_trees=25, max_depth=15
-        possible_max_depth= np.arange(10,50)
+        possible_max_depth= np.arange(10,25)
         space2 ={"initial_window":hp.choice("initial_window_index",possible_initial_window)
         , "window_size":hp.choice("window_size_index",possible_window_size), 
          "num_trees":hp.choice("num_trees",possible_nbr_tree), 
@@ -164,7 +164,7 @@ class class_hstree:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=tpe.rand.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]],

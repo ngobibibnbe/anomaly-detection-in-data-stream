@@ -118,7 +118,7 @@ class class_ARIMAFD:
 
 
         #possible_nbr_tree =np.arange(1,25)#[*range(1,100)]
-        possible_AR_window_size =np.arange(10, 100) #[*range(200,1000)]
+        possible_AR_window_size =np.arange(0, 100) #[*range(200,1000)]
         possible_d =np.arange(0,10)
         space2 ={"AR_window_size":hp.choice("AR_window_size_index",possible_AR_window_size), "d":hp.choice("d_index",possible_d) }
         trials = Trials()
