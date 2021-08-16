@@ -65,7 +65,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         ligne="erreur"
         
     #try :
-    if  True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
+    if "machine_temperature" in dataset: # True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)
@@ -151,8 +151,8 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                         base2["best_param"+key2] ="RAS"
 
             if key in file:
-                for key2,value in best_params[idx].items():
-                    base2["best_param"+key2][idx] =best_params[idx][key2]
+                """for key2,value in best_params[idx].items():
+                    base2["best_param"+key2][idx] =best_params[idx][key2]"""
                 base2.to_excel(file)
             else:
                 base2.to_excel(file)
@@ -160,17 +160,17 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
 
 
-        with mutex:
-            #with open('real_known_point_datasets.xlsx') as csv_file:
-            insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
-            insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
-            #csv_file.flush()
+        #with mutex:
+        #with open('real_known_point_datasets.xlsx') as csv_file:
+        insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
+        insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
+        #csv_file.flush()
         return idx, best_param,time_taken_1, score, identified
     
 
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(mp.cpu_count()-5)
+pool =mp.Pool(4)
 
 def test (meth) :                                                         
     

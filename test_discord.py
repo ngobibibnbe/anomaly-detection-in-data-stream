@@ -154,7 +154,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(mp.cpu_count())
+pool =mp.Pool(3)
 merlin_score=np.zeros(len(base))
 time_taken = np.zeros(len(base))
 best_params= ["params" for i in time_taken]
@@ -185,5 +185,4 @@ def test (meth) :
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring) for i ,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
 
-test("matrix_profile")
-test("hotsax")
+test("LAMP")
