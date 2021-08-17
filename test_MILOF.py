@@ -65,7 +65,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         ligne="erreur"
         
     #try :
-    if "machine_temperature" in dataset: # True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
+    if  True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)

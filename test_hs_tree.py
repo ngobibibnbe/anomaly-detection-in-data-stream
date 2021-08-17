@@ -27,7 +27,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import os 
-from hyperopt import fmin, tpe,hp, STATUS_OK, Trials
+from hyperopt import fmin, tpe,hp, STATUS_OK, Trials,rand
 from numba import jit, cuda
 import code
 #code.interact(local=locals)
@@ -164,7 +164,7 @@ class class_hstree:
         trials = Trials()
         
         
-        best = fmin(fn=objective,space=space2, algo=tpe.rand.suggest, max_evals=30,trials = trials)
+        best = fmin(fn=objective,space=space2, algo=rand.suggest, max_evals=30,trials = trials)
         #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]],
@@ -200,5 +200,42 @@ class class_hstree:
         return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
-        
+#####################################
+#############check
+###################################
+def HStree(X, initial_window, window_size, num_trees, max_depth):
+            """
+            Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
+            """
+            initial_window=window_size
+            
+            np.random.seed(61)  # Fix random seed.
+            X_all =np.array(X)
+            iterator = ArrayStreamer(shuffle=False)
+            A=X_all#.reshape(-1,1)
+            #print()
+            # Fit reference window integration to first 100 instances initially.
+            model=models.HalfSpaceTrees(feature_mins=np.array(A.min(axis=0)), feature_maxes=np.array(A.max(axis=0)), window_size=window_size, num_trees=num_trees, max_depth=max_depth, initial_window_X=X[:initial_window])
+            scores=[]
+            #scores= scores+ np.zeros(len(X_all[:initial_window])).tolist()
+            
+            for x in tqdm(iterator.iter(X_all)):
+                model.fit_partial(x)  # Fit to the instance.
+                score = model.score_partial(x)  # Score the instance.
+                #print(score)
+                scores.append(score)
+            #print(scores)
+            return scores
 
+dataset ="nab-data/realKnownCause/ambient_temperature_system_failure.csv"
+if os.path.exists("real_nab_data/"+dataset) :
+    df = pd.read_csv("real_nab_data/"+dataset)
+column="value"
+
+# reading the dataset
+X =[[i] for i in df[column].values]
+start =time.monotonic()
+real_scores= HStree(X,initial_window=0,window_size=1838,
+num_trees=16, max_depth= 23)
+end =time.monotonic()
+print ("***",real_scores, end-start)
