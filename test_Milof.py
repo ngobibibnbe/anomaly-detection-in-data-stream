@@ -179,21 +179,6 @@ class class_MILOF:
         
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-        #print("the final score is", scoring(scores_label),identified)
-        """if scoring_metric=="nab":
-            real_label = np.zeros(len(X))
-            for element in right:
-                real_label[int(element)]=1
-            real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
-            scores_frame=pd.DataFrame(scores_label, columns=['changepoint']) 
-            real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
-            scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
-            real_label_frame =real_label_frame.set_index('datetime')
-            scores_frame =scores_frame.set_index('datetime')
-        
-            nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
-            nab_score=nab_score["Standart"]  
-            return real_scores, scores_label, identified,nab_score, best_param, end-start"""  
         return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 

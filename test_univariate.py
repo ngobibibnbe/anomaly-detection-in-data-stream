@@ -113,18 +113,14 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         data_file_name =key+'_'+data_file_name
         dataset =directory+'/'+data_file_name
         df.to_csv(dataset, index=False)
-        
-        #thresholds.append(threshold)
-        print("terminé")
+
         def insertion(file):
             best_params[idx]=best_param
             time_taken[idx]=time_taken_1
             merlin_score[idx] = score
             all_identified[idx] =identified
             try:
-                
                 base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx") 
-                
                 base2[key+"_identified"] [idx]= all_identified[idx]
                 base2[key+"_Overlap_merlin"] [idx]= score
                 base2[key+"best_param"] [idx]=str(best_params [idx])
@@ -146,11 +142,11 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                         base2["best_param"+key2] ="RAS"
 
             if key in file:
-                """for key2,value in best_params[idx].items():
-                    base2["best_param"+key2][idx] =best_params[idx][key2]"""
-                base2.to_excel(file)
+                base2.to_excel(file,index=False)
             else:
-                base2.to_excel(file)
+                base2.to_excel(file,index=False)
+
+                
         insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
         insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
         return idx, best_param,time_taken_1, score, identified
@@ -161,7 +157,6 @@ from multiprocessing import Manager
 pool =mp.Pool(mp.cpu_count())
 
 def test (meth) :                                                         
-    
     methods= {meth:0}
     scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
