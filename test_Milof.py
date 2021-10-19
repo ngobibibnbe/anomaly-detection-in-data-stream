@@ -163,7 +163,7 @@ class class_MILOF:
             best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
             end=start =time.monotonic()
         else:
-            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+            best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
             #print(best)
             start =time.monotonic()
             real_scores= MILOF_(X,NumK=possible_NumK[best["NumK_index"]],KPar=possible_KPar[best["KPar_index"]],Bucket=possible_Bucket[best["Bucket_index"]] )
