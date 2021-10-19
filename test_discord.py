@@ -58,7 +58,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         ligne="erreur"
         
     #try :
-    if True :#ligne =="params" or flag:
+    if "dutch" in dataset : #True :#ligne =="params" or flag:
 
         df = pd.read_csv("dataset/"+dataset, names=["value"])
         print(dataset)

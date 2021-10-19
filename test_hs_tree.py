@@ -163,9 +163,9 @@ class class_hstree:
          }
         trials = Trials()
         
+
+        best = fmin(fn=objective,space=space2, algo=rand.suggest, max_evals=1,trials = trials)
         
-        best = fmin(fn=objective,space=space2, algo=rand.suggest, max_evals=30,trials = trials)
-        #print(best)
         start =time.monotonic()
         real_scores= HStree(X,initial_window=possible_initial_window[best["initial_window_index"]],window_size=possible_window_size[best["window_size_index"]],
         num_trees=possible_nbr_tree [best["num_trees"]], max_depth=possible_max_depth [best["max_depth"]] )
@@ -173,37 +173,16 @@ class class_hstree:
         best_param={"initial_window":possible_initial_window[best["initial_window_index"]],"window_size":possible_window_size[best["window_size_index"]] , 
         "num_trees":possible_nbr_tree [best["num_trees"]], "max_depth":possible_max_depth [best["max_depth"]]}
 
-        """except :
-            print("there was an error")
-            best_param={"initial_window":"RAS","window_size":"RAS","Bucket_index":"RAS" }
-        """
-        #real_scores=np.zeros(len(X))
-        #iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
-        
         scores_label =score_to_label(nbr_anomalies,real_scores,gap)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
         #print("the final score is", scoring(scores_label),identified)
-        """if scoring_metric=="nab":
-            real_label = np.zeros(len(X))
-            for element in right:
-                real_label[int(element)]=1
-            real_label_frame=pd.DataFrame(real_label, columns=['changepoint']) 
-            scores_frame=pd.DataFrame(scores_label, columns=['changepoint']) 
-            real_label_frame["datetime"] =pd.to_datetime(real_label_frame.index, unit='s')
-            scores_frame["datetime"] =pd.to_datetime(scores_frame.index, unit='s')
-            real_label_frame =real_label_frame.set_index('datetime')
-            scores_frame =scores_frame.set_index('datetime')
-        
-            nab_score=evaluating_change_point([real_label_frame.changepoint],[scores_frame.changepoint]) 
-            nab_score=nab_score["Standart"]  
-            return real_scores, scores_label, identified,nab_score, best_param, end-start"""    
         return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
 
 
 #####################################
 #############check
 ###################################
-def HStree(X, initial_window, window_size, num_trees, max_depth):
+def hHStree(X, initial_window, window_size, num_trees, max_depth):
             """
             Malheureusement le concept drift n'est pas encore implémenté dans pysad nous devons le faire manuellement
             """
@@ -227,7 +206,7 @@ def HStree(X, initial_window, window_size, num_trees, max_depth):
             #print(scores)
             return scores
 
-dataset ="nab-data/realKnownCause/ambient_temperature_system_failure.csv"
+"""dataset ="nab-data/realKnownCause/ambient_temperature_system_failure.csv"
 if os.path.exists("real_nab_data/"+dataset) :
     df = pd.read_csv("real_nab_data/"+dataset)
 column="value"
@@ -238,4 +217,4 @@ start =time.monotonic()
 real_scores= HStree(X,initial_window=0,window_size=1838,
 num_trees=16, max_depth= 23)
 end =time.monotonic()
-print ("***",real_scores, end-start)
+print ("***",real_scores, end-start)"""

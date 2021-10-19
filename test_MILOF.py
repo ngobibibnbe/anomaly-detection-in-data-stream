@@ -170,7 +170,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
 
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(4)
+pool =mp.Pool(mp.cpu_count())
 
 def test (meth) :                                                         
     

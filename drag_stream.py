@@ -254,7 +254,7 @@ class class_our:
       possible_window=np.array([gap,gap])#arange(100,gap+200)
       possible_threshold=np.arange(1,10,0.5)
       right_discord =[ int(discord) for discord in right]
-      possible_training=np.arange([1, min(min(right_discord),int(len(X)/4))] )
+      possible_training=np.arange(1, min(min(right_discord),int(len(X)/4)))
       possible_cluster=np.arange(10, 30)
       space2 ={"training":hp.choice("training_index",possible_training),
       "window":hp.choice("window_index",possible_window), "threshold":hp.choice("threshold_index",possible_threshold),
@@ -262,7 +262,7 @@ class class_our:
       trials = Trials()
       
       
-      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
+      """best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=30,trials = trials)
       #print(best)
       start =time.monotonic()
       real_scores= our(X,w=possible_window[best["window_index"]], r=possible_threshold[best["threshold_index"]]
@@ -274,7 +274,15 @@ class class_our:
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
       #print("the final score is", scoring(scores_label),identified)
       print("*********identified",identified)
-      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start"""
+      
+      start =time.monotonic()
 
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+      #print(best)
+      end =time.monotonic()
+      best_param={"cluster":possible_cluster[best["cluster_index"]], "training":possible_training[best["training_index"]],"window":possible_window[best["window_index"]], 'threshold':possible_threshold[best["threshold_index"]] }
+      
+      return np.zeros(len(X)), np.zeros(len(X)), [],0, best_param, end-start     
 
         

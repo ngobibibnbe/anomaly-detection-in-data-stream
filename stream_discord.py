@@ -250,28 +250,26 @@ class class_our:
       trials = Trials()
       
       
-      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+      """best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
       #print(best)
       start =time.monotonic()
       real_scores= our(X,w=possible_window[best["window_index"]], r=possible_threshold[best["threshold_index"]] )
-      end =time.monotonic()
+      end =time.monotonic()"""
       
-          
-      best_param={"window":possible_window[best["window_index"]], 'threshold':possible_threshold[best["threshold_index"]] }
-      """if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
-          best_param={"window":"error" }"""
+      start =time.monotonic()
 
-      """except :
-          print("there was an error")
-          best_param={"Numk":"RAS","KPar":"RAS","Bucket_index":"RAS" }
-      """
-        #real_scores=np.zeros(len(X))
-      #iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+      #print(best)
+      end =time.monotonic()
+      best_param=best_param={"window":possible_window[best["window_index"]], 'threshold':possible_threshold[best["threshold_index"]] }
+
+      return np.zeros(len(X)), np.zeros(len(X)), [],0, best_param, end-start      
+      """best_param={"window":possible_window[best["window_index"]], 'threshold':possible_threshold[best["threshold_index"]] }
       
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
       #print("the final score is", scoring(scores_label),identified)
-      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start"""
 
 
         

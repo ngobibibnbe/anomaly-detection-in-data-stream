@@ -200,19 +200,21 @@ class class_LAMP:
       trials = Trials()
       
       
-      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
-      #print(best)
+      #best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=20,trials = trials)
+
+
+      best = fmin(fn=objective,space=space2, algo=tpe.suggest, max_evals=1,trials = trials)
+      
       start =time.monotonic()
       real_scores= Matrix_profile(dataset,nbr_of_discord=possible_nbr_anomalies[best["nbr_anomalies_index"]],n=gap )
       end =time.monotonic()
       
           
       best_param={"nbr_of_discord":possible_nbr_anomalies[best["nbr_anomalies_index"]] }
-      """if real_scores == [1/(1+i) for i in list(np.zeros(len(X)))]:
-          best_param={"The model is porviding null every where" }"""
+
       scores_label =score_to_label(nbr_anomalies,real_scores,gap)
       identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
+      return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start 
 
 
 
