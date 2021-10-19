@@ -111,8 +111,6 @@ thresholds=[]
         
 # Test pipeline   
 # ****************************************************************************************************************************
-
-
 def test (meth) :                                                         
     merlin_score=np.zeros(len(base))
     time_taken = np.zeros(len(base))
