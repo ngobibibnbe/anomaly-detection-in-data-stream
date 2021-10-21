@@ -8,7 +8,7 @@ python test_univariate.py name-of-the-method-to-test
 On multivariate datasets: 
 python test_multivariate.py name-of-the-method-to-test
 
--The name of methods are the following:
+The name of methods are the following:
   MILOF for MILOF
   ARIMAFD for online ARIMA
   HS-tree for Hs-tree
