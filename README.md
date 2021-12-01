@@ -180,7 +180,7 @@ Here we summarize the average latency on multivariate datasets.
 1. [Dependencies](#Dependencies)
 2. [Launch test](#Launch-test)
 
-### Install dependencies:
+### Dependencies:
 Make sure you have at least python 3.6 
 
 to install requirement type:
