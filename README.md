@@ -1,10 +1,34 @@
-# Dependencies
+# Benchmarking data stream outlier detection methods
+
+### Main Contributions
+Data stream datasets have characteristics depending on the underlying domain and context. From their proximity to time series (mmmmmmmmmm citer le papier), we can characterize a data stream by the presence of  seasonality, trend, and cycle; due to the way data are arriving, we can add concept drift which is a non-negligible phenomenon which currently occurs in data stream context. 
+
+This work: 
+:white_check_mark: Compare some data stream anomaly detection methods on their latences and performances 
+:white_check_mark: Focus on caracteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
+
+
+### README Structure
+1. [Methods compared](#Emotional-Models): Presentation of methods we compared
+2. [Datasets and their caracteristics](#Emotional-Models): Brief Description of datasets and caracteristics identified 
+3. [Description of the experimental protocol](#Emotional-Models): Description of the experimental protocol
+5. [Results](#Emotional-Models): Presentation of results obtained
+6. [Reproducibility](#Emotional-Models): How to reproduce our tests
+7. [Referencies](#Emotional-Models)
+
+
+
+
+
+## How to reproduce our tests 
+### Install dependencies:
 Make sure you have at least python 3.6 
 to install requirement type: pip install -r requirements.txt
 
-# To test methods:
+### To test methods:
 On univariate dataset:
 python test_univariate.py name-of-the-method-to-test
+
 On multivariate datasets: 
 python test_multivariate.py name-of-the-method-to-test
 
@@ -23,3 +47,6 @@ It is possible to change the score used for the experiment by default the MERLIN
 
 Details on characteristics of the datasets and hyperparameters we found are summarized in the file: summary_of_the_experiment.pdf. 
 
+
+# referencies:
+- 
