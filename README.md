@@ -211,7 +211,8 @@ IforestASD, KitNet, and HStree has been tested from their [pysad implementation]
 
 
 ## Referencies:
-1. Methods
+1. Methods:
+
 Togbe, M. U., Y. Chabchoub, A. Boly, M. Barry, R. Chiky, et M. Bahri (2021). Anomalies
 Detection Using Isolation in Concept-Drifting Data Streams. Computers 10(1).
 
@@ -220,37 +221,31 @@ for streaming data using sliding window. IFAC Proceedings Volumes 46(20), 12–1
 IFAC Conference on Intelligent Control and Automation Science ICONS 2013
 
 an, S. C., K. M. Ting, et T. F. Liu (2011). Fast anomaly detection for streaming data. In
-Proceedings of the Twenty-Second International Joint Conference on Artificial Intelligence
-- Volume Volume Two, IJCAI’11, pp. 1511–1516. AAAI Press.
+Proceedings of the Twenty-Second International Joint Conference on Artificial Intelligence Volume Volume Two, IJCAI’11, pp. 1511–1516. AAAI Press.
 
 Salehi, M., C. Leckie, J. C. Bezdek, T. Vaithianathan, et X. Zhang (2016). Fast memory
 efficient local outlier detection in data streams. IEEE Transactions on Knowledge and Data
 Engineering 28, 3246–3260.
 
-Mirsky, Y., T. Doitshman, Y. Elovici, et A. Shabtai (2018). Kitsune : An ensemble of autoen-
-coders for online network intrusion detection. arXiv :1802.09089 [cs]. version : 2
+Mirsky, Y., T. Doitshman, Y. Elovici, et A. Shabtai (2018). Kitsune : An ensemble of autoencoders for online network intrusion detection. arXiv :1802.09089 [cs]. version : 2
 
-Liu, C., S. C. H. Hoi, P. Zhao, et J. Sun (2016). Online arima algorithms for time series predic-
-tion. In Proceedings of the Thirtieth AAAI Conference on Artificial Intelligence, AAAI’16,
+Liu, C., S. C. H. Hoi, P. Zhao, et J. Sun (2016). Online arima algorithms for time series prediction. In Proceedings of the Thirtieth AAAI Conference on Artificial Intelligence, AAAI’16,
 pp. 1867–1873. AAAI Press
 
 
 
 
-2. Datasets
+2. Datasets:
 
-Lavin, A. et S. Ahmad (2015). Evaluating real-time anomaly detection algorithms - the nu-
-menta anomaly benchmark. CoRR abs/1510.03336.
+Lavin, A. et S. Ahmad (2015). Evaluating real-time anomaly detection algorithms - the numenta anomaly benchmark. CoRR abs/1510.03336.
 
-Iurii Katser, Viacheslav Kozitsin, V. L. et I. Maksimov (2021). Unsupervised offline change-
-point detection ensembles. Applied sciences 11, 4280
+Iurii Katser, Viacheslav Kozitsin, V. L. et I. Maksimov (2021). Unsupervised offline change point detection ensembles. Applied sciences 11, 4280
 
 
-3. Comparative studies
+3. Comparative studies:
 
 Togbe, M., Y. Chabchoub, A. Boly, R. Chiky, C. Etude, et M. U. Togbe (2020). Etude compa-
-rative des méthodes de détection d’anomalies. Revue des Nouvelles Technologies de l’Infor-
-mation Extraction et Gestion des Connaissances , RNTI-E-36, 109–120
+rative des méthodes de détection d’anomalies. Revue des Nouvelles Technologies de l’Information Extraction et Gestion des Connaissances , RNTI-E-36, 109–120
 
 SalehiMahsa et RashidiLida (2018). A Survey on Anomaly detection in Evolving Data. ACM
 SIGKDD Explorations Newsletter 20(1), 13–23.
