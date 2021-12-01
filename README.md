@@ -194,7 +194,7 @@ On univariate dataset:
 On multivariate datasets: 
 **python test_multivariate.py name-of-the-method-to-test**
 
-The name of methods are the following: MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet,
+The name of methods are the following: **MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet**.
 
 
 The results of the test will be in the folder result. The result file contains (In the result folder):
@@ -205,7 +205,9 @@ For each dataset and each method.
 
 **Notices:** 
 It is possible to change the score used for the experiment by default the MERLIN score (1% around the anomaly )is used, the NAB score is also available.
-Details on characteristics of the datasets and hyperparameters we found are summarized in the file: summary_of_the_experiment.pdf. 
+Details on characteristics of the datasets and hyperparameters we found are summarized in the file: [summary_of_the_experiment.pdf](https://github.com/nams2000/anomaly-detection-in-data-stream/blob/master/summary_of_the_experiments.pdf). 
+IforestASD, KitNet, and HStree has been tested from their (pysad implementation)[https://pysad.readthedocs.io/en/latest/api.html#module-pysad.models]
+
 
 
 # Referencies:
