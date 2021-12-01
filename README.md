@@ -9,6 +9,11 @@ This work:
 
 :white_check_mark: Focus on caracteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
 
+### Interested in my work?
+
+Feel free to contact me at: anne.ngobibinbe@gmail.com
+
+*The final version of our paper (in French) on the benchmark of data stream outlier detection methods is being submitted to the 2022 French Speaking Conference on the Extraction and Management of Knowledge (EGC).*
 
 ### README Structure
 1. [Methods compared](#Emotional-Models): Presentation of methods we compared
