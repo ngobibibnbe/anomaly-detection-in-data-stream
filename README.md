@@ -7,7 +7,7 @@ This work:
 
 :white_check_mark: Compare some data stream anomaly detection methods on their latences and performances 
 
-:white_check_mark: Focus on caracteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
+:white_check_mark: Focus on characteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
 
 ### Interested in my work?
 
@@ -17,7 +17,7 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 
 ### README Structure
 1. [Methods compared](#Methods-compared): Presentation of methods we compared
-2. [Datasets and their caracteristics](#Datasets-and-their-caracteristics): Brief Description of datasets and caracteristics identified 
+2. [Datasets and their characteristics](#Datasets-and-their-characteristics): Brief Description of datasets and characteristics identified 
 3. [Description of the experimental protocol](#Description-of-the-experimental-protocol): Description of the experimental protocol
 5. [Results](#Results): Presentation of results obtained
 6. [Reproducibility](#Reproducibility): Details on how to reproduce our tests
@@ -35,7 +35,7 @@ Methods:
 5. [KitNet]([https://github.com/ymirsky/KitNET-py) : Deep learning based methods  providing the anomaly score as the reconstruction error of an instance (Autoencoder)
 6. [MILOF](https://github.com/dingwentao/MILOF) : Proximity based approach, providing the anomaly score according to how locally reachable is an instance compared to its nearest neighbours. 
 
-## Datasets and their caracteristics
+## Datasets and their characteristics
 We selected datasets mostly from IOT domain and whose anomalies causes are known to avoid errors due to human or tools labeling. In the boards, **no** trend means the dataset has a constant trend. Those characteristics have been identified by visualizing the datasets and are support by STL decompositions for trends and seasonalities.
 
 :link: Anchor Links:
