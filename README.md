@@ -1,5 +1,5 @@
 # Benchmarking data stream outlier detection methods
-$\sum_{i=1}^n X_i$
+
 ### Main Contributions
 Data stream datasets have characteristics depending on the underlying domain and context. From their proximity to time series (mmmmmmmmmm citer le papier), we can characterize a data stream by the presence of  seasonality, trend, and cycle; due to the way data are arriving, we can add concept drift which is a non-negligible phenomenon which currently occurs in data stream context. 
 
@@ -72,7 +72,7 @@ other 22: Water supply of increased temperature | IOT |1079 | 4| yes | yes | yes
 
 
 ## Description of the experimental protocol
-For each dataset, a bayesian optimization is performed to find best hyperparameters (details of the hyperparameter search space of each method could be found in the implementation details (page 8) section of the [summary_of_the_experiment](https://github.com/nams2000/anomaly-detection-in-data-stream/blob/master/summary_of_the_experiments.pdf) file), then we test the method with the best hyperparameters and record the execution time and the f1-score. The latence or response time (average time to treat an instance)  =$\frac{the execution time on the dataset}{length of the dataset}$ .
+For each dataset, a bayesian optimization is performed to find best hyperparameters (details of the hyperparameter search space of each method could be found in the implementation details (page 8) section of the [summary_of_the_experiment](https://github.com/nams2000/anomaly-detection-in-data-stream/blob/master/summary_of_the_experiments.pdf) file), then we test the method with the best hyperparameters and record the latence and the f1-score. The **latence or response time (average time to treat an instance)=the execution time on the dataset/length of the dataset** . To process the f1-score, we consider a method find an anomaly if it 1% of the length of the dataset around the position of the position of the anomaly (This because an anomaly generaly occur on a small period and the point given as the position of the anomaly is a point inside the period on which the anomaly occured).
 
 Here a method find
 
