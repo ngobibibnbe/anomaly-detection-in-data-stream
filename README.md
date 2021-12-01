@@ -190,17 +190,13 @@ to install requirement type:
 On univariate dataset:
 **python test_univariate.py name-of-the-method-to-test**
 
-On multivariate datasets:
-
+On multivariate datasets: 
 **python test_multivariate.py name-of-the-method-to-test**
 
-The name of methods are the following:
-
-MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet,
+The name of methods are the following: MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet,
 
 
-The results of the test will be in the folder result. 
-The result file contains (In the result folder):
+The results of the test will be in the folder result. The result file contains (In the result folder):
 1. The execution time  on the dataset
 2. The F1-score of each method
 3. The best hyperparameters of each method
