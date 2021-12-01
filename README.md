@@ -1,7 +1,7 @@
 # Benchmarking data stream outlier detection methods
 
 ### Main Contributions
-Data stream datasets have characteristics depending on the underlying domain and context. From their proximity to time series (mmmmmmmmmm citer le papier), we can characterize a data stream by the presence of  seasonality, trend, and cycle; due to the way data are arriving, we can add concept drift which is a non-negligible phenomenon which currently occurs in data stream context. 
+Data stream datasets have characteristics depending on the underlying domain and context. From their proximity to time series, we can characterize a data stream by the presence of  seasonality, trend, and cycle; due to the way data are arriving, we can add concept drift which is a non-negligible phenomenon which currently occurs in data stream context. 
 
 This work: 
 
@@ -28,11 +28,12 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 As it's the case for most of the anomaly detection methods, the following methods produce an anomaly score for each incoming instance showing how well the instance could be an anomaly, finally a threshold fixed by the user permits to say that instances with anomaly scores higher than the threshold are anomalies. In the literature, data stream anomaly detection methods are mostly separated into statistical based, tree based, proximity based and deep learning based approaches. We have chosen highly used and recommended approaches in each of those categories. 
 
 Methods:
-1. Online ARIMA : Statistic based methods which provide the anomaly score by computing the distance between the value of the instance forecasted from past instances and the real value of the instance. (mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm rajouter son lien et ceux des autres, mettre aussi le lien directe vers le github)
-2. HStree : Tree based approach, providing the anomaly score according to how well an instance is isolated from other instances in an ensemble of pre-constructed trees
-3. IforestASD : Similar to HStree
-4. KitNet : Deep learning based methods  providing the anomaly score as the reconstruction error of an instance (Autoencoder)
-5. MILOF : Proximity based approach, providing the anomaly score according to how locally reachable is an instance compared to its nearest neighbours. 
+1. (Online ARIMA)[https://github.com/petrospgithub/onlinearima] : Statistic based methods which provide the anomaly score by computing the distance between the value of the instance forecasted from past instances and the real value of the instance. 
+
+3. (HStree)[https://github.com/yli96/HSTree] : Tree based approach, providing the anomaly score according to how well an instance is isolated from other instances in an ensemble of pre-constructed trees
+4. (IforestASD)[https://github.com/MariamBARRY/skmultiflow_IForestASD] : Similar to HStree
+5. (KitNet)[https://github.com/ymirsky/KitNET-py] : Deep learning based methods  providing the anomaly score as the reconstruction error of an instance (Autoencoder)
+6. (MILOF)[https://github.com/dingwentao/MILOF] : Proximity based approach, providing the anomaly score according to how locally reachable is an instance compared to its nearest neighbours. 
 
 ## Datasets and their caracteristics
 We selected datasets mostly from IOT domain and whose anomalies causes are known to avoid errors due to human or tools labeling. In the boards, **no** trend means the dataset has a constant trend. Those characteristics have been identified by visualizing the datasets and are support by STL decompositions for trends and seasonalities.
