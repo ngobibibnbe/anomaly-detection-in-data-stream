@@ -188,7 +188,6 @@ to install requirement type:
 
 ### Launch test:
 On univariate dataset:
-
 **python test_univariate.py name-of-the-method-to-test**
 
 On multivariate datasets:
