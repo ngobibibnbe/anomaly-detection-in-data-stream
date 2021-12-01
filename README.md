@@ -16,13 +16,27 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 *The final version of our paper (in French) on the benchmark of data stream outlier detection methods is being submitted to the 2022 French Speaking Conference on the Extraction and Management of Knowledge (EGC).*
 
 ### README Structure
-1. [Methods compared](#Emotional-Models): Presentation of methods we compared
+1. [Methods compared](#Methods-compared): Presentation of methods we compared
 2. [Datasets and their caracteristics](#Emotional-Models): Brief Description of datasets and caracteristics identified 
 3. [Description of the experimental protocol](#Emotional-Models): Description of the experimental protocol
 5. [Results](#Emotional-Models): Presentation of results obtained
 6. [Reproducibility](#Emotional-Models): How to reproduce our tests
 7. [Referencies](#Emotional-Models)
 
+
+## Methods compared
+As it's the case for most of the anomaly detection methods, the following methods produce an anomaly score for each incoming instance showing how well the instance could be an anomaly, finally a threshold fixed by the user permits to say that instances with anomaly scores higher than the threshold are anomalies. In the literature, data stream anomaly detection methods are mostly separated into statistical based, tree based, proximity based and deep learning based approaches. We have chosen highly used and recommended approaches in each of those categories. 
+
+:link: Anchor Links:
+1. Online ARIMA : Statistic based methods which provide the anomaly score by computing the distance between the value of the instance forecasted from past instances and the real value of the instance. (mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm rajouter son lien et ceux des autres)
+2. HStree : Tree based approach, providing the anomaly score according to how well an instance is isolated from other instances in an ensemble of pre-constructed trees
+3. IforestASD : Similar to HStree
+4. KitNet : Deep learning based methods  providing the anomaly score as the reconstruction error of an instance (Autoencoder)
+5. MILOF : Proximity based approach, providing the anomaly score according to how locally reachable is an instance compared to its nearest neighbours. 
+
+
+7. [Discrete Model](#Discrete-Model): Description of discrete emotions and the main representations
+8. [Continuous Model](#Continuous-Model): Description of continuous emotions and the main representations
 
 
 
