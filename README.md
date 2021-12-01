@@ -211,7 +211,7 @@ IforestASD, KitNet, and HStree has been tested from their [pysad implementation]
 
 
 ## Referencies:
-1. Methods:
+### 1. Methods:
 
 Togbe, M. U., Y. Chabchoub, A. Boly, M. Barry, R. Chiky, et M. Bahri (2021). Anomalies
 Detection Using Isolation in Concept-Drifting Data Streams. Computers 10(1).
@@ -235,14 +235,14 @@ pp. 1867–1873. AAAI Press
 
 
 
-2. Datasets:
+### 2. Datasets:
 
 Lavin, A. et S. Ahmad (2015). Evaluating real-time anomaly detection algorithms - the numenta anomaly benchmark. CoRR abs/1510.03336.
 
 Iurii Katser, Viacheslav Kozitsin, V. L. et I. Maksimov (2021). Unsupervised offline change point detection ensembles. Applied sciences 11, 4280
 
 
-3. Comparative studies:
+### 3. Comparative studies:
 
 Togbe, M., Y. Chabchoub, A. Boly, R. Chiky, C. Etude, et M. U. Togbe (2020). Etude compa-
 rative des méthodes de détection d’anomalies. Revue des Nouvelles Technologies de l’Information Extraction et Gestion des Connaissances , RNTI-E-36, 109–120
