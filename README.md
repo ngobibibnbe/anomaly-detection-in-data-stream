@@ -27,13 +27,21 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 ## Methods compared
 As it's the case for most of the anomaly detection methods, the following methods produce an anomaly score for each incoming instance showing how well the instance could be an anomaly, finally a threshold fixed by the user permits to say that instances with anomaly scores higher than the threshold are anomalies. In the literature, data stream anomaly detection methods are mostly separated into statistical based, tree based, proximity based and deep learning based approaches. We have chosen highly used and recommended approaches in each of those categories. 
 
-:link: Anchor Links:
+Methods:
 1. Online ARIMA : Statistic based methods which provide the anomaly score by computing the distance between the value of the instance forecasted from past instances and the real value of the instance. (mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm rajouter son lien et ceux des autres)
 2. HStree : Tree based approach, providing the anomaly score according to how well an instance is isolated from other instances in an ensemble of pre-constructed trees
 3. IforestASD : Similar to HStree
 4. KitNet : Deep learning based methods  providing the anomaly score as the reconstruction error of an instance (Autoencoder)
 5. MILOF : Proximity based approach, providing the anomaly score according to how locally reachable is an instance compared to its nearest neighbours. 
 
+## Datasets and their caracteristics
+We selected datasets mostly from IOT domain and whose anomalies causes are known to avoid errors due to human or tools labeling.
+
+:link: Anchor Links:
+1. [Univariate datasets](#Univariate-datasets)
+2. [Multivariate datasets](#Multivariate datasets)
+
+Univariate datasets
 
 7. [Discrete Model](#Discrete-Model): Description of discrete emotions and the main representations
 8. [Continuous Model](#Continuous-Model): Description of continuous emotions and the main representations
