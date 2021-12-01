@@ -46,13 +46,13 @@ We used here the Real known cause group of datasets of the NAB Benchmark (mmmmmm
 
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
 -----|-------------|------------|------------|---------|-----------------------|------------ |------------
-ambiant temperature system failure|  |7267 | 2| yes | yes | yes| no
-cpu utilization asg misconfiguration|  |18050 | 1| yes | yes | yes| yes
-ec2 request latency system failure|  |4032 | 3| no | no | yes| no
-machine temperature system failure|  |22695 | 4| no | no | no| no
-new york taxi|  |10320 | 5| no | yes | yes| yes
-rogue agent keyhold|  |1882 | 2| yes | no | yes| no
-rogue agent key up down|  |5315 | 2| yes | no | no| no
+ambiant temperature system failure| industry |7267 | 2| yes | yes | yes| no
+cpu utilization asg misconfiguration| IOT |18050 | 1| yes | yes | yes| yes
+ec2 request latency system failure|  IOT |4032 | 3| no | no | yes| no
+machine temperature system failure| industry |22695 | 4| no | no | no| no
+new york taxi| real life scenario |10320 | 5| no | yes | yes| yes
+rogue agent keyhold| IOT |1882 | 2| yes | no | yes| no
+rogue agent key up down| IOT  |5315 | 2| yes | no | no| no
 
  
 ### Multivariate datasets
