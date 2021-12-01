@@ -4,6 +4,7 @@
 Data stream datasets have characteristics depending on the underlying domain and context. From their proximity to time series (mmmmmmmmmm citer le papier), we can characterize a data stream by the presence of  seasonality, trend, and cycle; due to the way data are arriving, we can add concept drift which is a non-negligible phenomenon which currently occurs in data stream context. 
 
 This work: 
+
 :white_check_mark: Compare some data stream anomaly detection methods on their latences and performances 
 
 :white_check_mark: Focus on caracteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
