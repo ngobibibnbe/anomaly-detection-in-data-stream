@@ -17,8 +17,8 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 
 ### README Structure
 1. [Methods compared](#Methods-compared): Presentation of methods we compared
-2. [Datasets and their caracteristics](#Emotional-Models): Brief Description of datasets and caracteristics identified 
-3. [Description of the experimental protocol](#Emotional-Models): Description of the experimental protocol
+2. [Datasets and their caracteristics](#Datasets-and-their-caracteristics): Brief Description of datasets and caracteristics identified 
+3. [Description of the experimental protocol](#Description-of-the-experimental-protocol): Description of the experimental protocol
 5. [Results](#Emotional-Models): Presentation of results obtained
 6. [Reproducibility](#Emotional-Models): How to reproduce our tests
 7. [Referencies](#Emotional-Models)
@@ -62,17 +62,19 @@ We selected some datasets showing a great number of our specified characteristic
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
 -----|-------------|------------|------------|---------|-----------------------|------------ |------------
 other 9: Closing the valve at the flow inlet to the pump| IOT |751 | 2| no | no | yes| yes
-other 11: Closing the valve at the flow inlet to the pump|  |665 | 4| no | yes | no| no
-other 13: Sharply behavior of rotor imbalance|  |7267 | 2| yes | yes | yes| no
-other 14: Linear behavior of rotor imbalance|  |1153 | 2| yes | yes | yes| yes
-other 15: Step behavior of rotor imabalance |  |1147 | 2| yes | yes | yes| no
-other 17: Exponential behavior of rotor imbalance|  |1147 | 4| no | yes | no| yes
-other 20: Draining water from the tank until cavation |  |1191 | 4| yes | yes | yes| no
-other 22: Water supply of increased temperature |  |1079 | 4| yes | yes | yes| yes
+other 11: Closing the valve at the flow inlet to the pump| IOT |665 | 4| no | yes | no| no
+other 13: Sharply behavior of rotor imbalance| IOT |7267 | 2| yes | yes | yes| no
+other 14: Linear behavior of rotor imbalance| IOT |1153 | 2| yes | yes | yes| yes
+other 15: Step behavior of rotor imabalance |  IOT|1147 | 2| yes | yes | yes| no
+other 17: Exponential behavior of rotor imbalance| IOT |1147 | 4| no | yes | no| yes
+other 20: Draining water from the tank until cavation | IOT |1191 | 4| yes | yes | yes| no
+other 22: Water supply of increased temperature | IOT |1079 | 4| yes | yes | yes| yes
 
-7. [Discrete Model](#Discrete-Model): Description of discrete emotions and the main representations
-8. [Continuous Model](#Continuous-Model): Description of continuous emotions and the main representations
 
+## Description of the experimental protocol
+For each dataset, a bayesian optimization is performed to find best hyperparameters (details of the hyperparameter search space of each method could be found in the implementation details (page 8) section of the [summary_of_the_experiment](https://github.com/nams2000/anomaly-detection-in-data-stream/blob/master/summary_of_the_experiments.pdf) file), then we test the method with the best hyperparameters and record the execution time and the f1-score. The $latence or response time (average time to treat an instance)  =\frac{the execution time on the dataset}{length of the dataset}$ .
+
+Here a method find
 
 
 
