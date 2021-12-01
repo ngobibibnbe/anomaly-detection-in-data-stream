@@ -5,6 +5,7 @@ Data stream datasets have characteristics depending on the underlying domain and
 
 This work: 
 :white_check_mark: Compare some data stream anomaly detection methods on their latences and performances 
+
 :white_check_mark: Focus on caracteristics presents on the datasets (seasonality, trend, cycle, concept drift) 
 
 
