@@ -42,7 +42,7 @@ We selected datasets mostly from IOT domain and whose anomalies causes are known
 2. [Multivariate datasets](#Multivariate-datasets)
 
 ### Univariate datasets
-We used here the Real known cause group of datasets of the NAB Benchmark (mmmmmmmmmmmmmmmmmmmmciter nab, mettre aussi le lien directe vers le github)
+We used here the Real known cause group of datasets of the (NAB)[https://github.com/numenta/NAB/tree/master/data] Benchmark. 
 
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
 -----|-------------|------------|------------|---------|-----------------------|------------ |------------
@@ -61,14 +61,14 @@ We selected some datasets showing a great number of our specified characteristic
 
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
 -----|-------------|------------|------------|---------|-----------------------|------------ |------------
-other 9: Closing the valve at the flow inlet to the pump| IOT |751 | 2| no | no | yes| yes
-other 11: Closing the valve at the flow inlet to the pump| IOT |665 | 4| no | yes | no| no
-other 13: Sharply behavior of rotor imbalance| IOT |7267 | 2| yes | yes | yes| no
-other 14: Linear behavior of rotor imbalance| IOT |1153 | 2| yes | yes | yes| yes
-other 15: Step behavior of rotor imabalance |  IOT|1147 | 2| yes | yes | yes| no
-other 17: Exponential behavior of rotor imbalance| IOT |1147 | 4| no | yes | no| yes
-other 20: Draining water from the tank until cavation | IOT |1191 | 4| yes | yes | yes| no
-other 22: Water supply of increased temperature | IOT |1079 | 4| yes | yes | yes| yes
+other 9: Closing the valve at the flow inlet to the pump| Industrial IOT |751 | 2| no | no | yes| yes
+other 11: Closing the valve at the flow inlet to the pump| Industrial IOT |665 | 4| no | yes | no| no
+other 13: Sharply behavior of rotor imbalance| Industrial IOT |7267 | 2| yes | yes | yes| no
+other 14: Linear behavior of rotor imbalance| Industrial IOT |1153 | 2| yes | yes | yes| yes
+other 15: Step behavior of rotor imabalance |  Industrial IOT|1147 | 2| yes | yes | yes| no
+other 17: Exponential behavior of rotor imbalance| Industrial IOT |1147 | 4| no | yes | no| yes
+other 20: Draining water from the tank until cavation | Industrial IOT |1191 | 4| yes | yes | yes| no
+other 22: Water supply of increased temperature | Industrial IOT |1079 | 4| yes | yes | yes| yes
 
 
 ## Description of the experimental protocol
