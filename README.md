@@ -56,7 +56,7 @@ rogue agent key up down| IOT  |5315 | 2| yes | no | no| no
 
  
 ### Multivariate datasets
-We selected some datasets showing a great number of our specified characteristics from the SKAB benchmark (mmmmmmmmmmciter SKAB). All those datasets have 7 dimensions.
+We selected some datasets showing a great number of our specified characteristics from the (SKAB)[https://github.com/waico/SKAB] benchmark. All those datasets have 7 dimensions.
 
 
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
