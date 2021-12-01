@@ -20,7 +20,7 @@ Feel free to contact me at: anne.ngobibinbe@gmail.com
 2. [Datasets and their caracteristics](#Datasets-and-their-caracteristics): Brief Description of datasets and caracteristics identified 
 3. [Description of the experimental protocol](#Description-of-the-experimental-protocol): Description of the experimental protocol
 5. [Results](#Results): Presentation of results obtained
-6. [Reproducibility](#Reproducibility): How to reproduce our tests
+6. [Reproducibility](#Reproducibility): Details on how to reproduce our tests
 7. [Referencies](#Referencies)
 
 
@@ -95,7 +95,18 @@ rogue agent keyhold|  0.136 | 0.33 | 0.079 | 0.1
 rogue agent key up down| 0.4 | **0.67** | 0.15 | 0.11
 
 
+Here we summarize the number of datasets where the methods had the best scores, and among those the number having conceptual drift, seasonality, trends and cycles (knowing that a dataset can have more than one of the possible characteristics).
+
+ | Method         | Number of best scores | Concept drift| Seasonality | Trend| Cycle |
+|-----------------------|--------------------------------|------------------------|----------------------|----------------|----------------|
+| MILOF        | 0                              | 0                      | 0                    | 0              | 0              |
+| HStree      | 2                              | 0                      | 0                    | 1              | 0              |
+| iforestASD   | 3                              | 2                      | 1                    | 2              | 0              |
+| Online ARIMA | 3                              | 2                      | 3                    | 3              | 2              |
+
+
 2. Execution time (ms)
+we rounded execution time.
 
  Dataset | MILOF | IforestASD | HStree | Online ARIMA 
 -----|-------------|------------|------------|-----------
@@ -107,53 +118,99 @@ new york taxi | **275** | 269 | 4776 | 391
 rogue agent keyhold|  31 | 76| **16** | 17
 rogue agent key up down| 26  | 203 | **8** | 37
 
+Here we summarize the average latency on univariate datasets
 
- 
+|                            | MILOF | IforestASD | HStree | Online ARIMA |
+|----------------------------|--------------|---------------------|------------------|-----------------------
+| univariées (ms)   | 22.2         | 27.8                | 222.8            | **11.06**      
+
+
+
 ### Results on multivariate datasets
 1. F1-score 
 
-Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
------|-------------|------------|------------|---------|-----------------------|------------ |------------
-other 9: Closing the valve at the flow inlet to the pump| IOT |751 | 2| no | no | yes| yes
-other 11: Closing the valve at the flow inlet to the pump| IOT |665 | 4| no | yes | no| no
-other 13: Sharply behavior of rotor imbalance| IOT |7267 | 2| yes | yes | yes| no
-other 14: Linear behavior of rotor imbalance| IOT |1153 | 2| yes | yes | yes| yes
-other 15: Step behavior of rotor imabalance |  IOT|1147 | 2| yes | yes | yes| no
-other 17: Exponential behavior of rotor imbalance| IOT |1147 | 4| no | yes | no| yes
-other 20: Draining water from the tank until cavation | IOT |1191 | 4| yes | yes | yes| no
-other 22: Water supply of increased temperature | IOT |1079 | 4| yes | yes | yes| yes
-
-2. Execution time 
+Dataset | MILOF | IforestASD | HStree | KitNet
+-----|-------------|------------|------------|-----------
+other 9: Closing the valve at the flow inlet to the pump| **0.67** | 0.25 | 0.248 | 0.285
+other 11: Closing the valve at the flow inlet to the pump| 00.21 | 0.5 | **0.6** | 0.46
+other 13: Sharply behavior of rotor imbalance| 0.167 | 0.4 | **0.69** |0.6
+other 14: Linear behavior of rotor imbalance| 0.14 | 0.8 | 0.5 | **1**
+other 15: Step behavior of rotor imabalance | 0.167 | 0.5 | 0.292 | **0.52**
+other 17: Exponential behavior of rotor imbalance| 0.102 | 0.122 | 0.121 | **0.125**
+other 20: Draining water from the tank until cavation | 0.15 | 0.29 | 0.278 | **0.67**
+other 22: Water supply of increased temperature | 0/32 | 0.295 | 0.286 | **0.37**
 
 
+Here we summarize the number of datasets where the methods had the best scores, and among those the number having conceptual drift, seasonality, trends and cycles (knowing that a dataset can have more than one of the possible characteristics). 
 
-## How to reproduce our tests 
+
+ | Method         | Number of best scores | Concept drift| Seasonality | Trend| Cycle |
+|-----------------------|--------------------------------|------------------------|----------------------|----------------|----------------|
+| MILOF      | 1                              | 0                      | 0                    | 1              | 1              |
+| HStree    | 5                              | 5                      | 4                    | 4              | 3              |
+| IforestASD | 0                              | 0                      | 0                    | 0              | 0              |
+| KitNet   | 2                              | 0                      | 2                    | 0              | 0              |
+
+
+2. Execution time (ms)
+we rounded execution time except for Kitnet because its execution time is very low.
+
+Dataset | MILOF | IforestASD | KitNet | HStree 
+-----|-------------|------------|------------|-----------
+other 9: Closing the valve at the flow inlet to the pump| 9 |  27 |  **0.25** |  27
+other 11: Closing the valve at the flow inlet to the pump| 7 |  31 |  **0.17** |  2.8
+other 13: Sharply behavior of rotor imbalance| 10.3 | 38 | **0.53** | 153.7
+other 14: Linear behavior of rotor imbalance| 22 |  37 |**0.48** |  189 
+other 15: Step behavior of rotor imabalance |  7 |  32 |  **0.39** |  7
+other 17: Exponential behavior of rotor imbalance| 12 |  32 |  **0.4** |  48 
+other 20: Draining water from the tank until cavation | 6 |  31 |  **0.23** |  206 
+other 22: Water supply of increased temperature | 5 |  31 |  **0.17** |  3
+
+
+Here we summarize the average latency on multivariate datasets.
+
+|                            | MILOF | IforestASD | HStree | KitNet |
+|----------------------------|--------------|---------------------|------------------|-----------------------
+|multivariées (ms) | 9.5          | 31.9                | 80.7               | **0.32** |
+
+
+
+## Reproducibility
+:link: Anchor Links:
+1. [Dependencies](#Dependencies)
+2. [Launch test](#Launch-test)
+
 ### Install dependencies:
 Make sure you have at least python 3.6 
-to install requirement type: pip install -r requirements.txt
 
-### To test methods:
+to install requirement type:
+**pip install -r requirements.txt**
+
+### Launch test:
 On univariate dataset:
-python test_univariate.py name-of-the-method-to-test
 
-On multivariate datasets: 
-python test_multivariate.py name-of-the-method-to-test
+**python test_univariate.py name-of-the-method-to-test**
+
+On multivariate datasets:
+
+**python test_multivariate.py name-of-the-method-to-test**
 
 The name of methods are the following:
-  MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet,
 
-The results of the test will be in the folder result. for each dataset, the result file contains:
--the time execution
+MILOF for MILOF,  ARIMAFD for online ARIMA,  HS-tree for Hs-tree, iforestASD for iForestASD, KitNet for KitNet,
 
--the f1-score
 
--the best hyperparameters of each method
+The results of the test will be in the folder result. 
+The result file contains (In the result folder):
+1. The execution time  on the dataset
+2. The F1-score of each method
+3. The best hyperparameters of each method
+For each dataset and each method.
 
-# Notices: 
-It is possible to change the score used for the experiment by default the MERLIN score (1% around the anomaly )is used.
-
+**Notices:** 
+It is possible to change the score used for the experiment by default the MERLIN score (1% around the anomaly )is used, the NAB score is also available.
 Details on characteristics of the datasets and hyperparameters we found are summarized in the file: summary_of_the_experiment.pdf. 
 
 
-# referencies:
-- 
+# Referencies:
+
