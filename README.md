@@ -43,7 +43,7 @@ We selected datasets mostly from IOT domain and whose anomalies causes are known
 2. [Multivariate datasets](#Multivariate-datasets)
 
 ### Univariate datasets
-We used here the Real known cause group of datasets of the [NAB](https://github.com/numenta/NAB/tree/master/data) Benchmark. 
+We used here the Real known cause group of datasets from the [NAB](https://github.com/numenta/NAB/tree/master/data) Benchmark. 
 
 Dataset | Domain | Dataset length | number of anomalies | Concept Drift | Seasonality | Trend | Cylce 
 -----|-------------|------------|------------|---------|-----------------------|------------ |------------
