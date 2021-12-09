@@ -37,7 +37,12 @@ from score_nab import evaluating_change_point
 from test_ARIMAFD import class_ARIMAFD
 from test_KitNet import class_KitNet
 
+"""This module permits to test methods on univariate datasets (Real known cause datasets of NAB)
+Two scores are implemented in each method for the evaluation, the NAB score and the f1-score (over 1% the real position of the anomaly)
 
+the best hyperparameters, the time taken by each method and the score with the best hyperparameters are recorded in the result file
+
+"""
 
 
 # Test pipeline   
@@ -54,6 +59,29 @@ best_params= ["params" for i in time_taken]
 all_identified= ["no" for i in time_taken]
 
 def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,dataset,scoring_metric="merlin"):
+    """This function insure test on each dataset, and it update the file containing the results
+
+    Parameters passed contain each column of the result file for the method we are testing
+
+    :param merlin_score: the merlin score of a method on each dataset
+    :type merlin_score: list of float
+    :param best_params: list of best parameters of the method on each dataset
+    :type best_params: List of string
+    :param time_taken: list of time taken by the method
+    :type time_taken: List of float
+    :param all_identified: List of list of anomaly identified per dataset
+    :type all_identified: List
+    :param key: the name of the method
+    :type key: String
+    :param idx: the id of the dataset we are currently testing  (dataset have idx in the list of datasets)
+    :type idx: int
+    :param dataset: the relative path of the dataset
+    :type dataset: String
+    :param scoring_metric: The scoring metric either NAB or MERLIN, defaults to "merlin"
+    :type scoring_metric: str, optional
+    :return: idx, best_param,time_taken_1, score, identified
+    :rtype: int, String, float, float, List
+    """
     try: 
         base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx") 
         ligne = base2[key+"best_param"][idx]
@@ -77,8 +105,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
 
         if scoring_metric=="merlin":
-            #gap =int(int(base["Dataset length"][idx])/100)
-            # discord length
+            # discord length/100
             gap =int(len(X)/100)
         if scoring_metric=="nab":
             gap = int(len(X)/(20*nbr_anomalies))
@@ -126,8 +153,10 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2[key+"best_param"] [idx]=str(best_params [idx])
                 base2[key+"time_taken"] [idx]= time_taken[idx]
                 print("**********************************************************")
+                print("***************",key,"********************")
+                print("***************",dataset,"********************")
                 print("**********************************************************")
-                print(dataset, score, best_param, time_taken_1)
+                print( score, best_param, time_taken_1)
                 print("**********************************************************")
             except :
                 base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
@@ -145,8 +174,6 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2.to_excel(file,index=False)
             else:
                 base2.to_excel(file,index=False)
-
-                
         insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
         insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
         return idx, best_param,time_taken_1, score, identified
@@ -156,7 +183,13 @@ import multiprocessing as mp
 from multiprocessing import Manager
 pool =mp.Pool(mp.cpu_count())
 
-def test (meth) :                                                         
+def test (meth) :
+    """This function test each method on all datasets
+
+    :param meth: the name of the method we will test
+    :type meth: String
+    """
+                                                            
     methods= {meth:0}
     scoring_metric=["merlin"] # ,"merlin"
     for key, method in methods.items():
