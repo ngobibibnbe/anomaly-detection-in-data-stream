@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import os 
-
+from base_model import BaseModel
 from hyperopt import fmin, tpe,hp, STATUS_OK, Trials
 
 from numba import jit, cuda
@@ -23,24 +23,12 @@ from numba.core.errors import TypingError
 actual_dataset=[0]
 
 
-def check (indice, real_indices,gap):
-    Flag=True
-    for real_indice in real_indices:
-        real_indice=int(real_indice)
-        #print(indice, [*range(real_indice-gap,real_indice+gap)])
-        search = np.arange(real_indice-gap,real_indice+gap)
-        if indice in search:
-            Flag=False
-    return Flag
-
-
 
 import math
 import sys
 from datetime import datetime
 sys.path.append('MILOF/lib')
 from MiLOF import MILOF
-
 from stream_discord import class_our
 from test_LAMP import class_LAMP
 from test_hs_tree import class_hstree
@@ -49,13 +37,17 @@ from score_nab import evaluating_change_point
 from test_ARIMAFD import class_ARIMAFD
 from test_KitNet import class_KitNet
 
-class class_MILOF:
+class class_MILOF(BaseModel):
     def __init__(self):
         #self.nbr_anomalies= nbr_anomalies
         print("ok")
     
-    def test(dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
-
+    def test(self,dataset,X,right,nbr_anomalies,gap,scoring_metric="merlin"):
+        self.scoring_metric =scoring_metric
+        self.right =right
+        self.gap =gap
+        self.nbr_anomalies= nbr_anomalies
+        self.X=X
         #@jit
         def MILOF_(X,NumK,KPar,Bucket ):
             """
@@ -80,14 +72,12 @@ class class_MILOF:
             parameters+="NumK="+str(NumK)
             parameters+="\n"+"Kpar="+str(KPar)+"\nInputMatFile="+input_file+"\nDimension="+str(np.array(X).shape[1])
             parameters+=param
-            #print(parameters)
             file_name =dataset.replace("/","_")
             text_file = open("MILOF/conf/"+file_name+".cfg", "w")
             n = text_file.write(parameters)
             text_file.close()
 
             scores,X_unique = MILOF("MILOF/conf/"+file_name+".cfg")
-            #print("*",len(X))
             real_scores=[0 for i in X]
             scores =[1/i for i in scores]
             maxi=max(scores)
@@ -95,46 +85,9 @@ class class_MILOF:
             for idx, x in enumerate(X):
                 indices = [i for i, a in enumerate(np.array(X_unique) ) if (x == a).all()]
                 real_scores[idx]=scores[indices[0]]/maxi
-            #% cd /content/drive/MyDrive/Projets/stage
             return real_scores 
 
-        def scoring(scores):
-            score=0
-            for real in right:
-                real=int(real)
-                if 1 in scores[real-gap:real+gap]:
-                    score+=1
-            recall=score/nbr_anomalies #recall
-
-            precision=0
-            identified =np.where(scores==1)
-            identified=identified[0]
-            for found in identified:
-                if not check(found,right,gap):
-                    precision+=1
-            precision =precision/len(identified)
-            try :
-                score =2*(recall*precision)/(recall+precision) 
-            except :
-                score=0  
-            return score
         
-        def score_to_label(nbr_anomalies,scores,gap):
-            
-            thresholds = np.unique(scores)[:20]
-            f1_scores =[]
-            for threshold in thresholds:
-                labels=np.where(scores<threshold,0,1)
-                f1_scores.append(scoring(labels))
-            
-            q = list(zip(f1_scores, thresholds))
-
-            thres = sorted(q, reverse=True, key=lambda x: x[0])[0][1]
-            threshold=thres
-            arg=np.where(thresholds==thres)
-           
-            return np.where(scores<threshold,0,1)# i will throw only real_indices here. [0 if i<threshold else 1 for i in scores ]
-
         
         def objective(args):
             print(args)
@@ -144,10 +97,10 @@ class class_MILOF:
             """except :
                 print("there was an error so")
                 scores=np.zeros(len(X))"""
-            scores =score_to_label(nbr_anomalies,scores,gap)
+            scores =self.score_to_label(scores)
             
             
-            return 1/(1+scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
+            return 1/(1+self.scoring(scores))#scoring(scores)#{'loss': 1/1+score, 'status': STATUS_OK}
 
 
         possible_NumK=np.arange(10,min(50,int(len(np.unique(np.array(X)))/2)))#[*range(1,100)]
@@ -177,9 +130,9 @@ class class_MILOF:
         #real_scores=np.zeros(len(X))
         #iforestASD(X,window_size=possible_window_size[best["window_size_index"]],n_estimators=possible_nbr_tree[best["n_estimators_index"]])
         
-        scores_label =score_to_label(nbr_anomalies,real_scores,gap)
+        scores_label =self.score_to_label(real_scores)
         identified =[key for key, val in enumerate(scores_label) if val in [1]] 
-        return real_scores, scores_label, identified,scoring(scores_label), best_param, end-start
+        return real_scores, scores_label, identified,self.scoring(scores_label), best_param, end-start
 
 
 

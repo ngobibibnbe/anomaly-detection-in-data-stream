@@ -50,8 +50,8 @@ the best hyperparameters, the time taken by each method and the score with the b
 import multiprocessing
 mutex =multiprocessing.Lock()
 
-base_file ='real_known_point_datasets.xlsx'
-base = pd.read_excel(base_file)
+
+from sklearn.preprocessing import OneHotEncoder
 
 merlin_score=np.zeros(len(base))
 time_taken = np.zeros(len(base))
@@ -82,27 +82,39 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
     :return: idx, best_param,time_taken_1, score, identified
     :rtype: int, String, float, float, List
     """
-    try: 
-        base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx") 
-        ligne = base2[key+"best_param"][idx]
-        flag=False
-    except :
-        flag=True
-        print("erreur de fichier ")
-        ligne="erreur"
-    #try :
+    
     if  True:# "ambient_temperature_system_failure" in dataset: #ligne =="params" or flag: 
 
-        df = pd.read_csv("dataset/"+dataset, names=["value"])
-        print(dataset)
-        if os.path.exists("real_nab_data/"+dataset) :
-            df = pd.read_csv("real_nab_data/"+dataset)
-        column="value"
+        if sys.argv[2]=="U":
+            base_file ='real_known_point_datasets.xlsx'
+            base = pd.read_excel(base_file)
+            
+            df = pd.read_csv("dataset/"+dataset, names=["value"])
+            print(dataset)
+            if os.path.exists("real_nab_data/"+dataset) :
+                df = pd.read_csv("real_nab_data/"+dataset)
+            column="value"
+            # reading the dataset
+            X =[[i] for i in df[column].values]
+            right=np.array(str(base["Position discord"][idx]).split(';'))
+            nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
+        
+        if sys.argv[2]=="M":
+            base_file ='multivariate_abnormal_point.csv'
+            base = pd.read_csv(base_file)
+            print("we execute on ",dataset)
+            oe_style = OneHotEncoder()
+            for col in df.columns:
+                if df.dtypes[col]==np.object:
+                    oe_results = oe_style.fit_transform(df[[col]])
+                    df=df.join(pd.DataFrame(oe_results.toarray(), columns=oe_style.categories_))
+            
+            # reading the dataset
+            X =[df.iloc[i].values for i in range(0,len(df))] 
+            right=np.array(str(base["Position discord"][idx]).split(';'))
+            nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
 
-        # reading the dataset
-        X =[[i] for i in df[column].values]
-        right=np.array(str(base["Position discord"][idx]).split(';'))
-        nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
+
 
         if scoring_metric=="merlin":
             # discord length/100
@@ -122,15 +134,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
         if key=="KitNet":
             real_scores, scores_label, identified,score,best_param, time_taken_1= class_KitNet.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
 
-        if key=="LAMP":
-            base2 = pd.read_excel("point_methods_result_milof.xlsx")
-            if base2[key+"best_param"][idx]=='params':
-                return idx, 0,0, 0, 0
-            real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-
-        if key=="our":
-            real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,int(base["discord length"][idx]))  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-
+        
         df["anomaly_score"]=real_scores
         df["label"]=scores_label
         directory = os.path.dirname(('streaming_results/'+key+'/'+dataset))
@@ -159,7 +163,7 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 print( score, best_param, time_taken_1)
                 print("**********************************************************")
             except :
-                base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
+                base2 = pd.read_excel("real_known_point_datasets.xlsx")
                 base2[key+"_identified"] = all_identified
                 base2[key+"_Overlap_merlin"] = merlin_score
                 base2[key+"best_param"] =best_params 
@@ -174,32 +178,34 @@ def dataset_test(merlin_score,best_params,time_taken,all_identified,key,idx,data
                 base2.to_excel(file,index=False)
             else:
                 base2.to_excel(file,index=False)
-        insertion("f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
+        insertion("result/f1score_"+scoring_metric+"_abnormal_point_results.xlsx")
         insertion("result/f1score_"+scoring_metric+"_"+key+"_abnormal_point_univariate.xlsx")
         return idx, best_param,time_taken_1, score, identified
     
 
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(mp.cpu_count())
+pool =mp.Pool(mp.cpu_count()-1)
 
-def test (meth) :
+def test (meth, type_dataset) :
     """This function test each method on all datasets
+
+    The test on datasets are done in parallel through the multiprocessing library
 
     :param meth: the name of the method we will test
     :type meth: String
     """
                                                             
     methods= {meth:0}
-    scoring_metric=["merlin"] # ,"merlin"
+    scoring_metric=["nab"] # ,"merlin"
     for key, method in methods.items():
         thresholds=[]
         
         for scoring  in scoring_metric:
-            """for i, d in enumerate(base["Dataset"]):
+            for i, d in enumerate(base["Dataset"]):
                 dataset_test(merlin_score,best_params,time_taken,all_identified,key,i,base["Dataset"][i],scoring_metric=scoring)
-            """
-            with Manager() as mgr:
+            
+            """with Manager() as mgr:
                 merlin_score=mgr.list([]) + list(np.zeros(len(base)))
                 time_taken = mgr.list([]) + list(np.zeros(len(base)))
                 best_params= mgr.list([]) +  ["params" for i in time_taken]
@@ -207,10 +213,10 @@ def test (meth) :
                 output =pool.starmap(dataset_test, [(merlin_score,best_params,time_taken,all_identified,
                 key,idx,dataset,scoring) for idx,dataset in enumerate(base["Dataset"])  ] )
                 print ("**** merlin score",merlin_score)
-            
+            """
 import sys
 
 print("***",sys.argv)
 
-test(sys.argv[1])
+test(sys.argv[1],sys.argv[2])
 

@@ -1,5 +1,6 @@
 # Import modules.
 import numpy as np
+from pysad.models import iforest_asd
 from pysad.utils import Data
 import scipy.io
 import plotly.graph_objects as go
@@ -35,67 +36,71 @@ from test_KitNet import class_KitNet
 from test_Milof import class_MILOF
 
 def dataset_test(key,idx,dataset,scoring_metric="merlin"):
+    """This function assess a dataset among the set of dataset in the base file (real_known_cause_dataset),
+
+    For further analysis, we put the label of each instance of each dataset in a csv file at streaming_result/name_of_the_method/dataset_name
+
+    :param key: name of the method
+    :type key: String
+    :param idx: id of the line of the dataset
+    :type idx: int
+    :param dataset: name of the dataset
+    :type dataset: String
+    :param scoring_metric: scoring metric, defaults to "merlin"
+    :type scoring_metric: str, optional
+    """
     
-        df = pd.read_csv("dataset/"+dataset)
-        flag =False
-        try: 
-            base2 = pd.read_excel("f1score_"+scoring_metric+"_abnormal_multivariate_point_results.xlsx") 
-            ligne = base2[key+"best_param"][idx]
-        except :
-            flag=True
-            print("erreur de fichier ")
-            ligne="erreur"
-            
-        #try :
-        if True: # ligne =="params" or flag:
-            oe_style = OneHotEncoder()
-            for col in df.columns:
-                if df.dtypes[col]==np.object:
-                    oe_results = oe_style.fit_transform(df[[col]])
-                    df=df.join(pd.DataFrame(oe_results.toarray(), columns=oe_style.categories_))
-            
-            # reading the dataset
-            X =[df.iloc[i].values for i in range(0,len(df))] 
-            right=np.array(str(base["Position discord"][idx]).split(';'))
-            nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
+    df = pd.read_csv("dataset/"+dataset)
+    if True: # ligne =="params" or flag:
 
-            if scoring_metric=="merlin":
-                gap =int(len(X)/100)
-            if key =="HS-tree":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_hstree.test(dataset,X,right,nbr_anomalies,gap,scoring_metric=scoring_metric)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key =="MILOF":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_MILOF.test(dataset,X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key=="iforestASD":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_iforestASD.test(X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key=="ARIMAFD":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_ARIMAFD.test(df,X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key=="KitNet":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_KitNet.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key=="LAMP":
-                """base2 = pd.read_excel("point_methods_result_milof.xlsx")
-                if base2[key+"best_param"][idx]=='params':
-                    return idx, 0,0, 0, 0"""
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_LAMP.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            if key=="our":
-                real_scores, scores_label, identified,score,best_param, time_taken_1= class_our.test(dataset,df[column].values,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
-            df["anomaly_score"]=real_scores
-            df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
-            
-            
-            directory = os.path.dirname(('streaming_results/'+key+'/'+dataset))
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            data_file_name=dataset.split('/')[-1]
-            data_file_name =key+'_'+data_file_name
-            dataset =directory+'/'+data_file_name
-            df.to_csv(dataset, index=False)
+        
+        print("we execute on ",dataset)
+        oe_style = OneHotEncoder()
+        for col in df.columns:
+            if df.dtypes[col]==np.object:
+                oe_results = oe_style.fit_transform(df[[col]])
+                df=df.join(pd.DataFrame(oe_results.toarray(), columns=oe_style.categories_))
+        
+        # reading the dataset
+        X =[df.iloc[i].values for i in range(0,len(df))] 
+        right=np.array(str(base["Position discord"][idx]).split(';'))
+        nbr_anomalies=len(str(base["Position discord"][idx]).split(';'))
 
-            file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
-            file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
-            print(key,file1,file2,idx, best_param,time_taken_1, score, identified)
+        if scoring_metric=="merlin":
+            gap =int(len(X)/100)
+        if scoring_metric=="nab":
+            gap = int(len(X)/(20*nbr_anomalies))
+        if key =="HS-tree":
+            hstree = class_hstree()
+            real_scores, scores_label, identified,score,best_param, time_taken_1= hstree.test(dataset,X,right,nbr_anomalies,gap,scoring_metric=scoring_metric)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        if key =="MILOF":
+            milof = class_MILOF()
+            real_scores, scores_label, identified,score,best_param, time_taken_1= milof.test(dataset,X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        if key=="iforestASD":
+            iforestASD= class_iforestASD()
+            real_scores, scores_label, identified,score,best_param, time_taken_1= iforestASD.test(X,right,nbr_anomalies,gap)  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        if key=="ARIMAFD":
+            real_scores, scores_label, identified,score,best_param, time_taken_1= class_ARIMAFD.test(df,X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        if key=="KitNet":
+            kitNet = class_KitNet()
+            real_scores, scores_label, identified,score,best_param, time_taken_1= kitNet.test(X,right,nbr_anomalies,gap,scoring_metric="merlin")  # Le concept drift est encore à faire manuellement et;le threshold est fixé après en fonction du nombre d'anomalies dans le dataset pour ne pas pénaliser l'algorithme
+        df["anomaly_score"]=real_scores
+        df["label"]=scores_label#[0 if i<threshold else 1 for i in scores ]
+        
+        
+        directory = os.path.dirname(('streaming_results/'+key+'/'+dataset))
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        data_file_name=dataset.split('/')[-1]
+        data_file_name =key+'_'+data_file_name
+        dataset =directory+'/'+data_file_name
+        df.to_csv(dataset, index=False)
 
-            return (key,file1,file2,idx, best_param,time_taken_1, score, identified) # key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified
+        file1=scoring_metric+"_abnormal_multivariate_point_results.xlsx"
+        file2= scoring_metric+"_"+key+"_abnormal_multivarie_point.xlsx"
 
+        return (key,file1,file2,idx, best_param,time_taken_1, score, identified) # key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified
+    
 import multiprocessing
 mutex =multiprocessing.Lock()
 
@@ -103,7 +108,7 @@ base_file ='multivariate_abnormal_point.csv'
 base = pd.read_csv(base_file)
 import multiprocessing as mp
 from multiprocessing import Manager
-pool =mp.Pool(mp.cpu_count())
+pool =mp.Pool(1)
 
 thresholds=[]
 
@@ -117,21 +122,19 @@ def test (meth) :
     best_params= ["params" for i in time_taken]
     all_identified= ["no" for i in time_taken]
     methods= { meth:0}
-    scoring_metric=["merlin"] # you can also use NAB if you want to use the NAB score 
+    scoring_metric=["nab"] # you can also use NAB if you want to use the NAB score 
     for  key, method in methods.items() :
         
         with Manager() as mgr:
             def listener(m):
                 print("*****************************************")
-                print(m)
                 print("*****************************************")
                 key,file1,file2,idx, best_param,time_take, merlin_scor, identified=m
                 all_identified[idx] =identified
                 merlin_score[idx]=merlin_scor
                 time_taken[idx]=time_take
                 best_params[idx]=best_param
-                print(best_params,"***")
-                file1="f1score_"+scoring+"_abnormal_multivariate_point_results.xlsx"
+                file1="result/f1score_"+scoring+"_abnormal_multivariate_point_results.xlsx"
                 file2= "f1score_"+scoring+"_"+key+"_abnormal_multivarie_point.xlsx"
                 all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified)
 
@@ -145,7 +148,6 @@ def test (meth) :
                 for idx,dataset in enumerate(base["Dataset"]) :
                     """m=dataset_test(key,idx,dataset,scoring)
                     listener(m)"""
-
                     pool.apply_async(dataset_test, args=(key,idx,dataset,scoring,), callback=listener )
                 pool.close()
                 pool.join()
@@ -154,7 +156,6 @@ def test (meth) :
 
 
 def all_insertion(key,file1,file2,idx, best_params,time_taken, merlin_score, all_identified):
-    print(file1,key,idx,best_params,time_taken,merlin_score, all_identified)
     insertion(file1,key,idx,best_params,time_taken,merlin_score, all_identified)
     insertion(file2,key,idx,best_params,time_taken,merlin_score, all_identified)
 
@@ -162,35 +163,33 @@ def insertion(file,key,idx,best_params,time_taken,merlin_score, all_identified):
             
             try:
                 if key in file: 
-                    base2 = pd.read_excel("streaming_results/"+file)
+                    base2 = pd.read_csv("streaming_results/"+file)
                 else:
-                    base2 = pd.read_excel(file) 
+                    base2 = pd.read_csv(file) 
                 
                 base2[key+"_identified"] [idx]= all_identified[idx]
                 base2[key+"_Overlap_merlin"] [idx]= merlin_score[idx]
                 base2[key+"best_param"] [idx]=str(best_params [idx])
                 base2[key+"time_taken"] [idx]= time_taken[idx]
             except :
-                if key in file: 
-                    base2 = pd.read_csv(base_file)
-                else:
-                    base2 = pd.read_excel("merlin_abnormal_multivariate_point_results.xlsx") 
+                #if key in file: 
+                base2 = pd.read_csv(base_file)
+                """else:
+                    base2 = pd.read_excel("merlin_abnormal_multivariate_point_results.xlsx") """
                 base2[key+"_identified"] = all_identified
                 base2[key+"_Overlap_merlin"] = merlin_score
                 base2[key+"best_param"] =best_params 
                 base2[key+"time_taken"]= time_taken
-                print("***************************************except***************")
                 if key in file:
-                    print(best_params)
                     for key2,value in best_params[idx].items():
                         base2["best_param"+key2] =best_params[idx][key2]
 
             if key in file:
                 for key2,value in best_params[idx].items():
                     base2["best_param"+key2][idx] =best_params[idx][key2]
-                base2.to_excel("streaming_results/"+file, index=False)
+                base2.to_csv("streaming_results/"+file, index=False)
             else:
-                base2.to_excel(file, index=False)
+                base2.to_csv(file, index=False)
 
 
             
