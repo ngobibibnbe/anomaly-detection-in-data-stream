@@ -133,13 +133,13 @@ Here we summarize the average latency on univariate datasets
 Dataset | MILOF | IforestASD | HStree | KitNet
 -----|-------------|------------|------------|-----------
 other 9: Closing the valve at the flow inlet to the pump| **0.67** | 0.25 | 0.248 | 0.285
-other 11: Closing the valve at the flow inlet to the pump| 00.21 | 0.5 | **0.6** | 0.46
+other 11: Closing the valve at the flow inlet to the pump| 0.21 | 0.5 | **0.6** | 0.46
 other 13: Sharply behavior of rotor imbalance| 0.167 | 0.4 | **0.69** |0.6
 other 14: Linear behavior of rotor imbalance| 0.14 | 0.8 | 0.5 | **1**
 other 15: Step behavior of rotor imabalance | 0.167 | 0.5 | 0.292 | **0.52**
 other 17: Exponential behavior of rotor imbalance| 0.102 | 0.122 | 0.121 | **0.125**
 other 20: Draining water from the tank until cavation | 0.15 | 0.29 | 0.278 | **0.67**
-other 22: Water supply of increased temperature | 0/32 | 0.295 | 0.286 | **0.37**
+other 22: Water supply of increased temperature | 0.32 | 0.295 | 0.286 | **0.37**
 
 
 Here we summarize the number of datasets where the methods had the best scores, and among those the number having conceptual drift, seasonality, trends and cycles (knowing that a dataset can have more than one of the possible characteristics). 
